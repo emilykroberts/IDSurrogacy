@@ -8,7 +8,6 @@ if(is.na(array_id)) array_id = 1
 {n = 600
 rhost = rhos = .5; rhot = .5
 SIM = 1000
-test = T; test0 = T
 holdtheta = F
 cep = T
 individual = F
@@ -19,8 +18,6 @@ holdscale13 = F
 
 equalfrail = T
 independent = T
-estCFfrail12 = T
-estCFfrail13 = T
 diffscale1323 = T
 holdshape = F
 holdshape13 = F
@@ -37,10 +34,10 @@ holdfrail12 = F
 holdfrail13 = F
 tau_s = 1
 tau_t = 2
-frailtysd2 = frailtysd = 0.5
+frailtysd2 = frailtysd = 0.75
 scenario = 1
 
-write = T
+write = F
 plotwrite = as.numeric(array_id == 1)
 }
 
@@ -629,7 +626,6 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   acceptfrail0 = acceptfrail1 = matrix(data = 0, nrow = 100, ncol = SIM)
   }
   
-  if(!holdfrail12){
   f0 = emfrail(formula = Surv(c(dat0$y12), c(dat0$s12)) ~  cluster(rep(1:(n/2), 1)), data = dat0)
   f0_2 = emfrail(formula = Surv(c(dat0$y23, dat0$y13), c(dat0$s23, dat0$s13)) ~  cluster(rep(1:(n/2), 2)), data = dat0)
   f1 = emfrail(formula = Surv(c(dat1$y12), c(dat1$s12)) ~  cluster(rep(1:(n/2), 1)), data = dat1)
@@ -646,66 +642,65 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   o13save1[1:(n/2)] = omega13_z1 = log(f1_2$frail)#*factor
   o23save1[1:(n/2)] = omega23_z1 = log(f1_2$frail)#*factor
 
-### option 2
+  ### option 2
   if(F){
-# dat1penal = data.frame(time = c(dat1$y23, dat1$y13, dat1$y12),
-#                        status = c(dat1$s23, dat1$s13, dat1$s12),
-#                        id = rep(1:(n/2), 3))
-
-dat1penal = data.frame(time = c(dat1$y12),
-                       status = c(dat1$s12),
-                       id = rep(1:(n/2), 1))
-
-dat1penal = dat1penal[complete.cases(dat1penal),]
-
-penalfrail1 = frailtyPenal(Surv(time, status)~cluster(id),
-             data=dat1penal,n.knots=8,kappa=10000)
-omega12_z1 = o12save1[1:(n/2)] = log(penalfrail1$frailty.pred)
-
-dat1penal = data.frame(time = c(dat1$y23, dat1$y13),
-                       status = c(dat1$s23, dat1$s13),
-                       id = rep(1:(n/2), 2))
-dat1penal = dat1penal[complete.cases(dat1penal),]
-
-penalfrail1 = frailtyPenal(Surv(time, status)~cluster(id),
-                           data=dat1penal,n.knots=8,kappa=10000)
-omega13_z1 = o13save1[1:(n/2)] = log(penalfrail1$frailty.pred)
-
-# dat0penal = data.frame(time = c(dat0$y23, dat0$y13, dat0$y12),
-#                        status = c(dat0$s23, dat0$s13, dat0$s12),
-#                        id = rep(1:(n/2), 3))
-# 
-# dat0penal = dat0penal[complete.cases(dat0penal),]
-# 
-# penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
-#                            data=dat0penal,n.knots=8,kappa=10000)
-
-#o13save0[1:(n/2)] = o12save0[1:(n/2)] = log(penalfrail0$frailty.pred)
-
-dat0penal = data.frame(time = c(dat0$y12),
-                       status = c(dat0$s12),
-                       id = rep(1:(n/2), 1))
-
-dat0penal = dat0penal[complete.cases(dat0penal),]
-
-penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
-                           data=dat0penal,n.knots=8,kappa=10000)
-
-omega12_z0 = o12save0[1:(n/2)] = log(penalfrail0$frailty.pred)
-
-dat0penal = data.frame(time = c(dat0$y23, dat0$y13),
-                       status = c(dat0$s23, dat0$s13),
-                       id = rep(1:(n/2), 2))
-
-dat0penal = dat0penal[complete.cases(dat0penal),]
-
-penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
-                           data=dat0penal,n.knots=8,kappa=10000)
-
-omega13_z0 = o13save0[1:(n/2)] = log(penalfrail0$frailty.pred)
-}
-
+    # dat1penal = data.frame(time = c(dat1$y23, dat1$y13, dat1$y12),
+    #                        status = c(dat1$s23, dat1$s13, dat1$s12),
+    #                        id = rep(1:(n/2), 3))
+    
+    dat1penal = data.frame(time = c(dat1$y12),
+                           status = c(dat1$s12),
+                           id = rep(1:(n/2), 1))
+    
+    dat1penal = dat1penal[complete.cases(dat1penal),]
+    
+    penalfrail1 = frailtyPenal(Surv(time, status)~cluster(id),
+                               data=dat1penal,n.knots=8,kappa=10000)
+    omega12_z1 = o12save1[1:(n/2)] = log(penalfrail1$frailty.pred)
+    
+    dat1penal = data.frame(time = c(dat1$y23, dat1$y13),
+                           status = c(dat1$s23, dat1$s13),
+                           id = rep(1:(n/2), 2))
+    dat1penal = dat1penal[complete.cases(dat1penal),]
+    
+    penalfrail1 = frailtyPenal(Surv(time, status)~cluster(id),
+                               data=dat1penal,n.knots=8,kappa=10000)
+    omega13_z1 = o13save1[1:(n/2)] = log(penalfrail1$frailty.pred)
+    
+    # dat0penal = data.frame(time = c(dat0$y23, dat0$y13, dat0$y12),
+    #                        status = c(dat0$s23, dat0$s13, dat0$s12),
+    #                        id = rep(1:(n/2), 3))
+    # 
+    # dat0penal = dat0penal[complete.cases(dat0penal),]
+    # 
+    # penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
+    #                            data=dat0penal,n.knots=8,kappa=10000)
+    
+    #o13save0[1:(n/2)] = o12save0[1:(n/2)] = log(penalfrail0$frailty.pred)
+    
+    dat0penal = data.frame(time = c(dat0$y12),
+                           status = c(dat0$s12),
+                           id = rep(1:(n/2), 1))
+    
+    dat0penal = dat0penal[complete.cases(dat0penal),]
+    
+    penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
+                               data=dat0penal,n.knots=8,kappa=10000)
+    
+    omega12_z0 = o12save0[1:(n/2)] = log(penalfrail0$frailty.pred)
+    
+    dat0penal = data.frame(time = c(dat0$y23, dat0$y13),
+                           status = c(dat0$s23, dat0$s13),
+                           id = rep(1:(n/2), 2))
+    
+    dat0penal = dat0penal[complete.cases(dat0penal),]
+    
+    penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
+                               data=dat0penal,n.knots=8,kappa=10000)
+    
+    omega13_z0 = o13save0[1:(n/2)] = log(penalfrail0$frailty.pred)
   }
+  
   
   factor1 = frailtysd/sd(o12save0[1:(n/2)])
   factor1 = 1
@@ -726,48 +721,47 @@ omega13_z0 = o13save0[1:(n/2)] = log(penalfrail0$frailty.pred)
   
   o23save1[1:(n/2)] = omega23_z1 =
     o13save1[1:(n/2)] = omega13_z1 = omega13_z1*factor4
-  # 
+  
   # plot(o12save0[1:(n/2)], omega12true0[1:(n/2)])
   # plot(o13save0[1:(n/2)], omega13true0[1:(n/2)])
   # plot(o12save1[1:(n/2)], omega12true1[1:(n/2)])
   # plot(o13save1[1:(n/2)], omega13true1[1:(n/2)])
   
-z = 2
-
-mod23_0 = summary(survreg(Surv(dat0$y23, dat0$s23) ~ dat0$y12, dist = "exponential"))
-mod23_0 = summary(survreg(Surv(dat0$y23, dat0$s23) ~ dat0$y12 + omega23true0[1:(n/2)], dist = "exponential"))
-mod23_0 = summary(survreg(Surv(dat0$y23, dat0$s23) ~ dat0$y12 + omega23_z0, dist = "exponential"))
-
-mod23_1 = summary(survreg(Surv(dat1$y23, dat1$s23) ~ dat1$y12 + omega23true1[1:(n/2)], dist = "exponential"))
-mod23_1 = summary(survreg(Surv(dat1$y23, dat1$s23) ~ dat1$y12 + omega23_z1, dist = "exponential"))
-
-x_0 = x_1 = rep(0, n/2) # no covariates 
-
-if(holdtheta){
-  holdtheta23_0[1] = theta23_0 = params_list$theta23_0
-  holdtheta23_1[1] = theta23_1 = params_list$theta23_1
-}
-
-if(holdscale12){
-  scale12_0 = params_list$scale12_0
-  scale12_1 = params_list$scale12_1
-}
-
-if(holdshape){
-  shape12_0 = params_list$shape12_0
-  shape12_1 = params_list$shape12_1
-  shape13_0 = params_list$shape13_0
-  shape13_1 = params_list$shape13_1
-  shape23_0 = params_list$shape23_0
-  shape23_1 = params_list$shape23_1
-}
+  z = 2
+  
+  mod23_0 = summary(survreg(Surv(dat0$y23, dat0$s23) ~ dat0$y12, dist = "exponential"))
+  mod23_0 = summary(survreg(Surv(dat0$y23, dat0$s23) ~ dat0$y12 + omega23true0[1:(n/2)], dist = "exponential"))
+  mod23_0 = summary(survreg(Surv(dat0$y23, dat0$s23) ~ dat0$y12 + omega23_z0, dist = "exponential"))
+  
+  mod23_1 = summary(survreg(Surv(dat1$y23, dat1$s23) ~ dat1$y12 + omega23true1[1:(n/2)], dist = "exponential"))
+  mod23_1 = summary(survreg(Surv(dat1$y23, dat1$s23) ~ dat1$y12 + omega23_z1, dist = "exponential"))
+  
+  x_0 = x_1 = rep(0, n/2) # no covariates 
+  
+  if(holdtheta){
+    holdtheta23_0[1] = theta23_0 = params_list$theta23_0
+    holdtheta23_1[1] = theta23_1 = params_list$theta23_1
+  }
+  
+  if(holdscale12){
+    scale12_0 = params_list$scale12_0
+    scale12_1 = params_list$scale12_1
+  }
+  
+  if(holdshape){
+    shape12_0 = params_list$shape12_0
+    shape12_1 = params_list$shape12_1
+    shape13_0 = params_list$shape13_0
+    shape13_1 = params_list$shape13_1
+    shape23_0 = params_list$shape23_0
+    shape23_1 = params_list$shape23_1
+  }
 
 
 while(z < SIM){ 
 
   zseed = round(runif(1, 1, 100)) ;  set.seed(zseed + z + array_id)
   
-  if(test0){
   omega12_star = rnorm(n/2, o12save0[1:(n/2)], sd = proposalsdfrail)
   omega23_star = rnorm(n/2, o23save0[1:(n/2)], sd = proposalsdfrail)
   omega13_star = rnorm(n/2, o13save0[1:(n/2)], sd = proposalsdfrail)
@@ -808,8 +802,7 @@ while(z < SIM){
   holdfrailmean12_0[z] = mean(omega12_star)
   
   omega_cf = rnorm(n/2, rhos * omega_star, sd = frailtysd * sqrt(1 - rhos^2))
-  if(!estCFfrail12) omega_cf = omega12true0[(n/2 + 1): n]
-  
+
   o12save0 = c(omega_star, omega_cf)
   
   holdomega12_0[,z] = omega12_z0[1:10]
@@ -915,8 +908,7 @@ while(z < SIM){
   
   omega13_star = omega13_z0 = omega_star = z1 * omega13_star + (1-z1) * omega13_z0
   omega_cf = rnorm(n/2, rhot * omega_star, sd = 1 * sqrt(1 - rhot^2))
-  if(!estCFfrail13) omega_cf = omega13true0[(n/2 + 1): n]
-  
+
   o13save0 = c(omega_star, omega_cf)
   
   holdfrailsd13_0[z] = sd(omega13_star)
@@ -1046,14 +1038,13 @@ while(z < SIM){
   holdshape23_0[z] = shape23_0
   holdtheta23_0[z] = theta23_0
 
-}
 
 
-if(test){
-  { omega12_star = rnorm(n/2, o12save1[1:(n/2)], sd = proposalsdfrail)
+
+  omega12_star = rnorm(n/2, o12save1[1:(n/2)], sd = proposalsdfrail)
   omega23_star = rnorm(n/2, o23save1[1:(n/2)], sd = proposalsdfrail)
   omega13_star = rnorm(n/2, o13save1[1:(n/2)], sd = proposalsdfrail)
-}
+
 
 
 omega12_z1 = o12save1[1:(n/2)]
@@ -1091,8 +1082,7 @@ for(i in 1:(n/2)){
   holdfrailmean12_1[z] = mean(omega12_star)
   
   omega_cf = rnorm(n/2, rhos * omega_star, sd = frailtysd * sqrt(1 - rhos^2))
-  if(!estCFfrail12) omega_cf = omega12true1[(n/2 + 1): n]
-  
+
   o12save1 = c(omega_star, omega_cf)
   
   holdomega12_1[,z] = omega12_z1[1:10]
@@ -1188,8 +1178,7 @@ for(i in 1:(n/2)){
   
   omega23_z1 = omega13_star = omega13_z1 = omega_star = z1 * omega13_star + (1-z1) * omega13_z1
   omega_cf = rnorm(n/2, rhos * omega_star, sd = frailtysd * sqrt(1 - rhos^2))
-  if(!estCFfrail13) omega_cf = omega13true1[(n/2 + 1): n]
-  
+
   o13save1 = c(omega_star, omega_cf)
 
   if(sum(z1[1]) >= 1) accept8 = accept8 + 1
@@ -1366,7 +1355,7 @@ for(i in 1:(n/2)){
   holdshape23_1[z] =  shape23_1 = z15*shape23_1_star + (1-z15) *  holdshape23_1[z - 1]
   holdbeta23_1[z] = beta23_1 = z15*beta23_1_star + (1-z15) *  holdbeta23_1[z - 1]
   
-  }
+
 
 if(cep){ 
   
@@ -1671,10 +1660,9 @@ d = ggplot(dat, aes(X, Y)) + ylim(c(-1, 1))+
   xlab(TeX("$\\Delta S_i = log \\frac{\\Lambda_{12}^0 (\\tau_S| x_i,\\omega_{12i}^0)}{\\Lambda_{12}^1 (\\tau_S| x_i,\\omega_{12i}^1)}$$ ")) + 
   geom_hline(yintercept = 0, linetype = "dashed") + geom_vline(xintercept = 0, linetype = "dashed")  + 
   coord_cartesian(ylim=c(-1,1)) + theme_bw()  + 
- # geom_abline(slope = holdslope[1], intercept = holdint[1], aes(alpha = 0.001, color = 'gray')) + 
   geom_point(aes(color = 1)) 
 
-for(i in burnin:(z-1))  d = d + geom_abline(slope = slope[i], intercept = int[i] )
+for(i in burnin:sim)  d = d + geom_abline(slope = slope[i], intercept = int[i] )
 d3 = d + geom_point(aes(color = 1)) + theme(legend.position = "none")
 
 print(d3)
