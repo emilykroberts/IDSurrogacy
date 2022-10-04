@@ -5,10 +5,10 @@ library(xtable); library(ggforce); library(wesanderson); library(cowplot)
 
 array_id = 1; array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
 if(is.na(array_id)) array_id = 1
-{n = 600
+{n = 900
 rhost = rhos = .5; rhot = .5
-SIM = 1000
-holdtheta = F
+SIM = 600
+holdtheta = T
 cep = T
 individual = F
 holdscale = F
@@ -19,26 +19,26 @@ holdscale13 = F
 equalfrail = T
 independent = T
 diffscale1323 = T
-holdshape = F
-holdshape13 = F
-holdshape23 = F
+holdshape = T
+holdshape13 = T
+holdshape23 = T
 holdc = T
 holdc23 = T
 
-proposalsd = 0.04
+proposalsd = 0.02
 proposalsdtheta = 0.04
 proposalsdfrail = 0.003
 
-effecttheta = T
+effecttheta = F
 holdfrail12 = F
 holdfrail13 = F
 tau_s = 1
 tau_t = 2
-frailtysd2 = frailtysd = 0.75
+frailtysd2 = frailtysd = .1
 scenario = 1
 
 write = F
-plotwrite = as.numeric(array_id == 1)
+plotwrite = as.numeric(array_id == 10)
 }
 
 sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, rhost){
@@ -324,7 +324,7 @@ return(b)
 
 like23_theta = function(theta23_0, dat0, c23_0, shape23_0, scale23_0, omega13_z0){
  a =   (c(c23_0, theta23_0) * (dat0$s23 %*% (cbind(omega13_z0, dat0$y12))) -
-          scale23_0/shape23_0 * sum(dat0$y23 ^ 1/scale23_0  * exp(c23_0 * omega13_z0 + 
+          scale23_0/shape23_0 * sum(dat0$y23 ^ shape23_0  * exp(c23_0 * omega13_z0 + 
                                                                               theta23_0 * dat0$y12), na.rm = T))[2]
 
 return(a)
@@ -397,16 +397,9 @@ e = sum(c, d, na.rm = T)
 }
 
 like23_theta1 = function(theta23_1, dat1, c23_1, scale23_1, shape23_1, omega13_z1){
-  a = c((((dat1$s23 *c( c23_1, theta23_1)) %*% (cbind(omega13_z1, dat1$y12))) -
-       scale23_1/shape23_1* sum(dat1$y23 ^ (1/scale23_1)^(1) * exp(c23_1 * omega13_z1 +
-                                                                                    theta23_1 * dat1$y12), na.rm = T)) 
-  )[2]
-  b =  (c(c23_1, theta23_1) * (dat1$s23 %*% (cbind(omega13_z1, dat1$y12))) -
-          scale23_1  * sum(dat1$y23 ^ scale23_1   * exp(c23_1 * omega13_z1 + 
-                                                                      theta23_1 * dat1$y12), na.rm = T))[2]
-  
+
   c =   (c(c23_1, theta23_1) * (dat1$s23 %*% (cbind(omega13_z1, dat1$y12))) -
-           scale23_1/shape23_1 * sum(dat1$y23 ^ 1/scale23_1  * exp(c23_1 * omega13_z1 + 
+           scale23_1/shape23_1 * sum(dat1$y23 ^ shape23_1  * exp(c23_1 * omega13_z1 + 
                                                                                     theta23_1 * dat1$y12), na.rm = T))[2]
   return(c)
 }
@@ -517,14 +510,16 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
   
   
   fname <- paste('cep','.n',n,array_id,'.txt',sep="")
-  if(write) write.table(cbind(summary(reg)$coef[1,1], summary(reg)$coef[2,1]), file=fname, sep="\t", row.names=F, col.names=T)
+  res = cbind(summary(reg)$coef[1,1], summary(reg)$coef[2,1])
+  print(res)
+  if(write) write.table(res, file=fname, sep="\t", row.names=F, col.names=T)
 
   d2 = ggplot(dat, aes(log(X), Y, alpha = 0.01)) + geom_point(alpha = 0.5) + theme_classic() + 
     ggtitle("Illness-Death CEP Curve with True Values" ) +
     theme(legend.position = "none") + # theme(plot.caption = element_textbox_simple()) + 
     xlab("Delta S_i")+ ylim(-1,1)   +
     ylab(TeX("$\\Delta T_i = P(T_i(1) > \\tau_T|x_i, \\omega_{.i}^1) - P(T_i(0) > \\tau_T |x_i, \\omega_{.i}^0)$$ ")) +
-    xlab(TeX("$\\Delta S_i = log \\frac{\\Lambda_{12}^0 (\\tau_S| x_i,\\omega_{12i}^0)}{\\Lambda_{12}^1 (\\tau_S| x_i,\\omega_{12i}^1)}$$ ")) + 
+    xlab(TeX("$\\Delta S_i = log \\frac{\\Lambda_{12}^{0} (\\tau_S| x_i,\\omega_{12i}^0)}{\\Lambda_{12}^{1} (\\tau_S| x_i,\\omega_{12i}^1)}$$ ")) + 
     geom_hline(yintercept = 0, linetype = "dashed") + geom_vline(xintercept = 0, linetype = "dashed") + 
     geom_hline(yintercept = mean(dat$Y, na.rm = T), linetype = "dashed", col = 'red') + geom_vline(xintercept =  mean(log(dat$X), na.rm = T), linetype = "dashed", col = 'red') + 
     
@@ -579,7 +574,7 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
   
 }
 
-#true_cep(dat0 = dat0, dat1 = dat1, write = write, params_list = true_params, plotwrite = plotwrite)
+true_cep(dat0 = dat0, dat1 = dat1, write = write, params_list = true_params, plotwrite = plotwrite)
 
 params_list = true_params
 
@@ -956,6 +951,12 @@ while(z < SIM){
                                            exp(c23_0_star * omega23_z0 +
                                                  theta23_0_star * dat0$y12), na.rm = T))^(-1))
   
+  scale23_0_star = 1/rinvgamma(1, shape = 0.01 + sum(dat0$s23, na.rm = T),
+                               scale = (0.01 + 1/shape23_0_star *
+                                          sum(dat0$y23 ^ shape23_0_star * 
+                                                exp(c23_0_star * omega23_z0 +
+                                                      theta23_0_star * dat0$y12), na.rm = T)))
+  
   if(holdscale23) scale23_0_star = scale23_0
 
   c13prior_p = pnorm(c13_0_star, 0, sd = 3)
@@ -981,8 +982,10 @@ while(z < SIM){
   shape23prior_c = ptruncnorm(holdshape23_0[z-1], a = 0, b = 3,  mean = 0, sd = 3)
   
   theta23prop_p = pnorm(theta23_0_star, -mod23_0$coefficients[2], sd = proposalsd)
-  
   theta23prop_c = pnorm(holdtheta23_0[z-1], -mod23_0$coefficients[2], sd = proposalsd)
+  
+  theta23prop_p = pnorm(theta23_0_star, 0, sd = proposalsd)
+  theta23prop_c = pnorm(holdtheta23_0[z-1], 0, sd = proposalsd)
   
     p = exp(
               like13_shape(dat0 = dat0, c13_0 = c13_0_star,
@@ -1002,6 +1005,7 @@ while(z < SIM){
                   (like23_shape(shape23_0 = holdshape23_0[z-1], dat0 = dat0, c23_0 = holdc23_0[z-1], omega13_z0 = omega13_z0, 
                                 scale23_0 = holdscale23_0[z-1], theta23_0 = holdtheta23_0[z-1]) + log(shape23prior_c)))
     
+
     if(is.nan(p)) p = 0;if(is.na(p)) p = 0; if((p<0)) p = 0;  if((p>1)) p = 1
     if(is.nan(p2)) p2 = 0;if(is.na(p2)) p2 = 0; if((p2<0)) p2 = 0;  if((p2>1)) p2 = 1
     
@@ -1233,11 +1237,13 @@ for(i in 1:(n/2)){
                                      sum(dat1$y23 ^ shape23_1_star * 
                                            exp(c23_1_star * omega23_z1 +
                                                  theta23_1_star * dat1$y12), na.rm = T))^(-1))
-  # 
-  # rgamma(1, shape = 0.01 + sum(dat1$s23, na.rm = T),
-  #        scale = (0.01 + sum(dat1$y23 * exp(1 * omega23true1[1:(n/2)] +0*dat1$y12), na.rm = T))^(-1))
-  # 
-  # 
+  
+  scale23_1_star = 1/rinvgamma(1, shape = 0.01 + sum(dat1$s23, na.rm = T),
+                               scale = (0.01 + 1/shape23_1_star *
+                                          sum(dat1$y23 ^ shape23_1_star * 
+                                                exp(c23_1_star * omega23_z1 +
+                                                      theta23_1_star * dat1$y12), na.rm = T)))
+  
   if(holdscale23) scale23_1_star =  scale23_1
 
   c13prior_p = pnorm(c13_1_star, 0, sd = 3)
@@ -1264,6 +1270,10 @@ for(i in 1:(n/2)){
   
   theta23prop_p = pnorm(theta23_1_star, -mod23_1$coefficients[2], sd = proposalsd)
   theta23prop_c = pnorm(holdtheta23_1[z-1], -mod23_1$coefficients[2], sd = proposalsd)
+  
+  theta23prop_p = pnorm(theta23_1_star, 0, sd = proposalsd)
+  theta23prop_c = pnorm(holdtheta23_1[z-1], 0, sd = proposalsd)
+  
   
     p = exp(like13_shape1(shape13_1 = shape13_1_star, scale13_1 = scale13_1_star, dat1 = dat1,
                           omega13_z1 = omega13_z1, c13_1 = c13_1_star) + log(shape13prior_p)-
@@ -1483,9 +1493,8 @@ plot_traceplots = function(params_matrix, variable){
   
   plot(eval(parse(text = paste0("param$", variable))), ylab = "Parameter Draw",
        xlab = "MCMC Iteration", main = paste("Traceplot of Parameter", variable))
-
-
 }
+
 
 plot_traceplots(params_matrix = params_res, variable = "int")
 plot_traceplots(params_matrix = params_res, variable = "slope")
@@ -1639,34 +1648,24 @@ plot_results = function(params_matrix, write){
   dat = data.frame(matrix(data = NA, nrow = n, ncol = 1))
   dat$X = rowMeans(saveCEPx[,burnin:ncol(saveCEPx)], na.rm = T)
   dat$Y = rowMeans(saveCEPy[,burnin:ncol(saveCEPx)], na.rm = T)
-  dat$Xsd = apply(saveCEPx[,burnin:ncol(saveCEPx)], 1, sd, na.rm = T)
-  dat$Ysd = apply(saveCEPy[,burnin:ncol(saveCEPx)], 1, sd, na.rm = T)
-  dat$XupCI = apply(saveCEPx[,burnin:ncol(saveCEPx)], 1, quantile, 0.975, na.rm = T)
-  dat$XlowCI = apply(saveCEPx[,burnin:ncol(saveCEPx)], 1, quantile, 0.025, na.rm = T)
-  dat$YupCI = apply(saveCEPy[,burnin:ncol(saveCEPx)], 1, quantile, 0.975,  na.rm = T)
-  dat$YlowCI = apply(saveCEPy[,burnin:ncol(saveCEPx)], 1, quantile, 0.025,  na.rm = T)
 
-x = rep(0, n)
+  slope = params_matrix$params$slope
+  int = params_matrix$params$int
 
-slope = params_matrix$params$slope
-int = params_matrix$params$int
+  theme_set(  theme_classic(base_size = 16))
 
-theme_set(  theme_classic(base_size = 16))
-
-d = ggplot(dat, aes(X, Y)) + ylim(c(-1, 1))+
-  ggtitle("Illness-Death CEP Curve" ) + 
-  xlab("Delta S_i")+ 
+  d = ggplot(dat, aes(X, Y), col(c(rep(0, n/2), rep(1, n/2)))) + ylim(c(-1, 1)) +
+  ggtitle("Illness-Death CEP Curve" ) +  xlab("Delta S_i")+ 
   ylab(TeX("$\\Delta T_i = P(T_i(1) > \\tau_T| \\omega_{.i}^1) - P(T_i(0) > \\tau_T | \\omega_{.i}^0)$$ ")) +
-  xlab(TeX("$\\Delta S_i = log \\frac{\\Lambda_{12}^0 (\\tau_S| x_i,\\omega_{12i}^0)}{\\Lambda_{12}^1 (\\tau_S| x_i,\\omega_{12i}^1)}$$ ")) + 
+  xlab(TeX("$\\Delta S_i = log \\frac{\\Lambda_{12}^{0} (\\tau_S| x_i,\\omega_{12i}^0)}{\\Lambda_{12}^{1} (\\tau_S| x_i,\\omega_{12i}^1)}$$ ")) + 
   geom_hline(yintercept = 0, linetype = "dashed") + geom_vline(xintercept = 0, linetype = "dashed")  + 
-  coord_cartesian(ylim=c(-1,1)) + theme_bw()  + 
-  geom_point(aes(color = 1)) 
+  coord_cartesian(ylim=c(-1,1)) + theme_bw()  +  geom_point()#aes(color = factor(c(rep(0, n/2), rep(1, n/2))))) 
 
-for(i in burnin:sim)  d = d + geom_abline(slope = slope[i], intercept = int[i] )
-d3 = d + geom_point(aes(color = 1)) + theme(legend.position = "none")
+  for(i in burnin:sim)  d = d + geom_abline(slope = slope[i], intercept = int[i] )
+  d3 = d + geom_point(aes(color = 1)) + theme(legend.position = "none")
 
-print(d3)
-if(write) ggsave(paste0("estimatedCEP", ",", scenario, ",", array_id, ".jpeg"), d3)
+  print(d3)
+  if(write) ggsave(paste0("estimatedCEP", ",", scenario, ",", array_id, ".jpeg"), d3)
 
 }
 
