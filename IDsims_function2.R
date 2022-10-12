@@ -5,7 +5,7 @@ library(xtable); library(ggforce); library(wesanderson); library(cowplot)
 
 array_id = 1; array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
 if(is.na(array_id)) array_id = 1
-{n = 900
+{n = 600
 rhost = rhos = .5; rhot = .5
 SIM = 600
 holdtheta = T
@@ -34,7 +34,7 @@ holdfrail12 = F
 holdfrail13 = F
 tau_s = 1
 tau_t = 2
-frailtysd2 = frailtysd = .1
+frailtysd2 = frailtysd = .5 # inversely related to estimates of scale23 (becomes biased)
 scenario = 1
 
 write = F
@@ -621,10 +621,17 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   acceptfrail0 = acceptfrail1 = matrix(data = 0, nrow = 100, ncol = SIM)
   }
   
+  if(T){
   f0 = emfrail(formula = Surv(c(dat0$y12), c(dat0$s12)) ~  cluster(rep(1:(n/2), 1)), data = dat0)
   f0_2 = emfrail(formula = Surv(c(dat0$y23, dat0$y13), c(dat0$s23, dat0$s13)) ~  cluster(rep(1:(n/2), 2)), data = dat0)
+  f0_2 = emfrail(formula = Surv(c(dat0$y23, dat0$y13), c(dat0$s23, dat0$s13)) ~  cluster(rep(1:(n/2), 2)) + 
+                   c(dat0$y12, dat0$y12), data = dat0)
+  
   f1 = emfrail(formula = Surv(c(dat1$y12), c(dat1$s12)) ~  cluster(rep(1:(n/2), 1)), data = dat1)
   f1_2 = emfrail(formula = Surv(c(dat1$y23, dat1$y13), c(dat1$s23, dat1$s13)) ~  cluster(rep(1:(n/2), 2)), data = dat1)
+  f1_2 = emfrail(formula = Surv(c(dat1$y23, dat1$y13), c(dat1$s23, dat1$s13)) ~  cluster(rep(1:(n/2), 2)) + 
+                   c(dat1$y12, dat1$y12), data = dat1)
+  
   
   
   factor = frailtysd/sd(log(f0$frail))
@@ -636,9 +643,10 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   o12save1[1:(n/2)] = omega12_z1 = log(f1$frail)#*factor
   o13save1[1:(n/2)] = omega13_z1 = log(f1_2$frail)#*factor
   o23save1[1:(n/2)] = omega23_z1 = log(f1_2$frail)#*factor
-
+  }
+  
   ### option 2
-  if(F){
+  if(T){
     # dat1penal = data.frame(time = c(dat1$y23, dat1$y13, dat1$y12),
     #                        status = c(dat1$s23, dat1$s13, dat1$s12),
     #                        id = rep(1:(n/2), 3))
@@ -654,13 +662,14 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
     omega12_z1 = o12save1[1:(n/2)] = log(penalfrail1$frailty.pred)
     
     dat1penal = data.frame(time = c(dat1$y23, dat1$y13),
-                           status = c(dat1$s23, dat1$s13),
+                           status = c(dat1$s23, dat1$s13), y12 = c(dat1$y12, rep(0, n/2)), 
                            id = rep(1:(n/2), 2))
     dat1penal = dat1penal[complete.cases(dat1penal),]
     
-    penalfrail1 = frailtyPenal(Surv(time, status)~cluster(id),
+    penalfrail1 = frailtyPenal(Surv(time, status)~cluster(id) + y12,
                                data=dat1penal,n.knots=8,kappa=10000)
-    omega13_z1 = o13save1[1:(n/2)] = log(penalfrail1$frailty.pred)
+    
+    omega23_z1 = o23save1[1:(n/2)] = omega13_z1 = o13save1[1:(n/2)] = log(penalfrail1$frailty.pred)
     
     # dat0penal = data.frame(time = c(dat0$y23, dat0$y13, dat0$y12),
     #                        status = c(dat0$s23, dat0$s13, dat0$s12),
@@ -676,27 +685,30 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
     dat0penal = data.frame(time = c(dat0$y12),
                            status = c(dat0$s12),
                            id = rep(1:(n/2), 1))
-    
+
     dat0penal = dat0penal[complete.cases(dat0penal),]
-    
+
     penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
                                data=dat0penal,n.knots=8,kappa=10000)
-    
+
     omega12_z0 = o12save0[1:(n/2)] = log(penalfrail0$frailty.pred)
     
     dat0penal = data.frame(time = c(dat0$y23, dat0$y13),
-                           status = c(dat0$s23, dat0$s13),
+                           status = c(dat0$s23, dat0$s13), y12 = c(dat0$y12, rep(0, n/2)), 
                            id = rep(1:(n/2), 2))
     
     dat0penal = dat0penal[complete.cases(dat0penal),]
+    # 
+    # penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
+    #                            data=dat0penal,n.knots=8,kappa=10000)
     
-    penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id),
+    penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id) + y12,
                                data=dat0penal,n.knots=8,kappa=10000)
     
-    omega13_z0 = o13save0[1:(n/2)] = log(penalfrail0$frailty.pred)
+    omega23_z0 = o23save0[1:(n/2)] = omega13_z0 = o13save0[1:(n/2)] = log(penalfrail0$frailty.pred)
   }
   
-  
+  {
   factor1 = frailtysd/sd(o12save0[1:(n/2)])
   factor1 = 1
   o12save0[1:(n/2)] = omega12_z0 = omega12_z0*factor1
@@ -716,11 +728,40 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   
   o23save1[1:(n/2)] = omega23_z1 =
     o13save1[1:(n/2)] = omega13_z1 = omega13_z1*factor4
-  
+  }
   # plot(o12save0[1:(n/2)], omega12true0[1:(n/2)])
   # plot(o13save0[1:(n/2)], omega13true0[1:(n/2)])
   # plot(o12save1[1:(n/2)], omega12true1[1:(n/2)])
   # plot(o13save1[1:(n/2)], omega13true1[1:(n/2)])
+  
+  1/rinvgamma(1, shape = 0.01 + sum(dat1$s23, na.rm = T),
+              scale = (0.01 + 1/1 * sum(dat1$y23 ^ 1 * exp(1 * omega23_z1), na.rm = T)))
+  # .25 when frailtysd = 2, .5 when frailtysd = 1, 0.75 when frailtysd = 0.5, 0.89 when frailtysd = 0.25 for first estimation of frailty
+
+  1/rinvgamma(1, shape = 0.01 + sum(dat1$s13, na.rm = T),
+         scale = (0.01 + 1/1 *sum(dat1$y13 ^ 1 * exp(1 * omega13_z1), na.rm = T)))
+  
+  rgamma(1, shape = 0.01 + sum(dat1$s12, na.rm = T),
+         scale = (0.01 + 1/1 *sum(dat1$y12 ^ 1 * exp(1 * omega12_z1), na.rm = T))^(-1))
+  
+ # rgamma(1, shape = 0.01 + sum(dat1$s12, na.rm = T),  scale = (0.01 + 1/1 *sum(dat1$y12 ^ 1 * exp(1 * omega12true1[1:(n/2)]), na.rm = T))^(-1))
+  
+ # 1/rinvgamma(1, shape = 0.01 + sum(dat1$s23, na.rm = T),  scale = (0.01 + 1/1 *  sum(dat1$y23 ^ 1 * exp(1 * omega13true1[1:(n/2)] ), na.rm = T)))
+  
+  1/rinvgamma(1, shape = 0.01 + sum(dat0$s23, na.rm = T),  scale = (0.01 + 1/1 * sum(dat0$y23 ^ 1 * 
+                           exp(1 * omega23_z0), na.rm = T)))
+  
+ # 1/rinvgamma(1, shape = 0.01 + sum(dat0$s23, na.rm = T),  scale = (0.01 + 1/1 * sum(dat0$y23 ^ 1 *   exp(1 * omega13true0[1:(n/2)]), na.rm = T)))
+  
+  rgamma(1, shape = 0.01 + sum(dat0$s13, na.rm = T),
+         scale = (0.01 + 1/1 *sum(dat0$y13 ^ 1 * exp(1 * omega13_z0), na.rm = T))^(-1))
+  
+  rgamma(1, shape = 0.01 + sum(dat0$s12, na.rm = T),
+         scale = (0.01 + 1/1 *sum(dat0$y12 ^ 1 * exp(1 * omega12_z0), na.rm = T))^(-1)) # wrong
+  
+ # rgamma(1, shape = 0.01 + sum(dat0$s12, na.rm = T), scale = (0.01 + 1/1 *sum(dat0$y12 ^ 1 * exp(1 * omega12true0[1:(n/2)]), na.rm = T))^(-1))
+  
+  ## need to fix first value
   
   z = 2
   
@@ -750,6 +791,14 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
     shape13_1 = params_list$shape13_1
     shape23_0 = params_list$shape23_0
     shape23_1 = params_list$shape23_1
+  }
+  
+  if(holdfrail13){
+    o23save1[1:(n/2)] = omega23_z1 =
+      o13save1[1:(n/2)] = omega13_z1 = omega13true1[1:(n/2)]
+    
+    o23save0[1:(n/2)] = omega23_z0 =
+      o13save0[1:(n/2)] = omega13_z0 = omega13true0[1:(n/2)]
   }
 
 
