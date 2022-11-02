@@ -6,6 +6,19 @@ This R code provides functions to produce simulation studies as described and sh
 
 * [Ask a question/Open an issue: coming soon](https://github.com/emilykroberts) (GitHub issues for bug reports, feature requests)
 
+
+### Core functionality
+
+
+
+### Illustration of functions with simulated data
+
+
+
+### Simulation Function
+
 ### Contributing 
 
 If you are interested in contributing to the development please open an issue to request.
+
+### References and other literature
