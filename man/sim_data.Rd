@@ -4,18 +4,40 @@
 \alias{sim_data}
 \title{simulate data for simulations}
 \usage{
-sim_data(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, rhost)
+sim_data(
+  n,
+  array_id,
+  scenario,
+  effecttheta,
+  frailtysd,
+  rhot,
+  rhos,
+  rhost,
+  diffscale1323
+)
 }
 \arguments{
 \item{generating}{parameters}
 }
 \value{
-data
+datasets: dat0, dat1 and true frailties for use in other functions
 }
 \description{
 simulate data
 }
 \examples{
 create data
-
+array_id = 1
+n = 600
+rhost = rhos = .5; rhot = .5
+SIM = 5000
+equalfrail = T
+independent = T
+diffscale1323 = T
+frailtysd = 0.5
+scenario = 2
+effecttheta = F
+set.seed(1 + array_id)
+dat = sim_data(n = n, array_id = array_id, scenario = scenario, effecttheta = effecttheta,
+        rhos = rhos, rhot = rhot, rhost = rhost, frailtysd = frailtysd, diffscale1323 = T)
 }

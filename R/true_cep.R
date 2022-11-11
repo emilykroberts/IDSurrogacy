@@ -9,7 +9,7 @@
 #' @examples example cep
 #' 
 true_cep = function(dat0, dat1, write, params_list, plotwrite){
- 
+  
  params_list = attach(params_list)
  Fsave1 = Fsave = Fw_0 = Fw = Fw_1 <- NULL
  x = rep(0, n)
