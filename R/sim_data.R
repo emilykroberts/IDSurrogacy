@@ -1,3 +1,13 @@
+#' simulate data for simulations
+#'
+#' @description simulate data
+#'
+#' @param generating parameters
+#'
+#' @return data
+#'
+#' @examples create data
+#' 
 sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, rhost){
   
   {
