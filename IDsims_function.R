@@ -1,13 +1,11 @@
-library(MASS); library(mvtnorm); library(MCMCpack); library(LaplacesDemon)
+library(truncnorm); library(latex2exp); library(cowplot)
 library(ggplot2); library(survival); library(survminer); library(frailtyEM); library(frailtypack)
-library(truncnorm); library(latex2exp); library(kableExtra); library(Rfast)
-library(xtable); library(ggforce); library(wesanderson); library(cowplot)
 
 array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
 if(is.na(array_id)) array_id = 1
 {n = 600
 rhost = rhos = .5; rhot = .5
-SIM = 5000
+SIM = 200
 holdtheta = F
 holdscale12 = F
 holdscale23 = F
@@ -240,8 +238,8 @@ Lambda12=function(x,xdata1, omega1, shape12, scale12, c12, beta12_1) {
 cLambda13_frailty_lk=function(x,xdata1, omega2, scale13, shape13, c13, beta13_1) {
  return(-pweibull(x, scale= 1/scale13, shape = shape13, lower = F, log = T)*exp(beta13_1*xdata1 + c13*omega2))}
 
-cLambda23_frailty_lk=function(x,xdata1,v_predict, omega2, shape23, scale23, omega1, theta23, c23, beta23_1) {
- return(-pweibull(x, scale= 1/scale23, shape = shape23, lower = F, log = T)*exp(-(beta23_1*xdata1+c23*omega2+theta23*v_predict)))}
+cLambda23_frailty_lk=function(x,xdata1,v_predict, omega3, shape23, scale23, theta23, c23, beta23_1) {
+ return(-pweibull(x, scale= 1/scale23, shape = shape23, lower = F, log = T)*exp(-(beta23_1*xdata1+c23*omega3+theta23*v_predict)))}
 
 cLambda12_frailty_lk=function(x,xdata1, omega1, shape12, scale12, c12, beta12_1) {
  return( -pweibull(x, scale= 1/scale12, shape= shape12, lower = F, log = T)*exp(beta12_1*xdata1 + c12*omega1))}
@@ -377,13 +375,13 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  
  intfunction = function(j, i, t){
  exp(
- -ccLambda13_frailty_lk(x = t, xdata = x[i], omega2 = omega13true0[i], scale13 = scale13_0, 
+ -cLambda13_frailty_lk(x = t, xdata = x[i], omega2 = omega13true0[i], scale13 = scale13_0, 
  shape13 = shape13_0, c13 = c13_0, beta13_1 = beta13_0) - 
- ccLambda12_frailty_lk(x = t, xdata = x[i], 
+ cLambda12_frailty_lk(x = t, xdata = x[i], 
  omega1 = omega12true0[i], scale12 = scale12_0, shape12 = shape12_0, c12 = c12_0, beta12_1 = beta12_0)) *
  lambda12_frailty(t, xdata = x[i], omega1 = omega12true0[i], scale12 = scale12_0, shape12 = shape12_0,
  c12 = c12_0, beta12_1 = beta12_0)* 
- exp(-ccLambda23_frailty_lk(x = tau_t - t, xdata = x[i], omega3 = omega23true0[i], scale23 = scale23_0, 
+ exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = x[i], omega3 = omega23true0[i], scale23 = scale23_0, 
  shape23 = shape23_0, 
  c23 = c23_0, theta23 = theta23_0, v_predict = t, beta23_1 = beta23_0))
  }
@@ -397,9 +395,9 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  NA}
  ) 
  
- L12 = ccLambda12_frailty_lk(x = tau_t, xdata = x[i], shape12 = shape12_0,
+ L12 = cLambda12_frailty_lk(x = tau_t, xdata = x[i], shape12 = shape12_0,
  omega1 = omega12true0[i], scale12 =scale12_0, c12 = c12_0, beta12_1 = beta12_0)
- L13 = ccLambda13_frailty_lk(x = tau_t, xdata = x[i], omega2 = omega13true0[i], scale13 = scale13_0, shape13 = shape13_0,
+ L13 = cLambda13_frailty_lk(x = tau_t, xdata = x[i], omega2 = omega13true0[i], scale13 = scale13_0, shape13 = shape13_0,
  c13 = c13_0, beta13_1 = beta13_0)
  
  Fw = (exp(-L13 - L12) + y)
@@ -409,13 +407,13 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  
  intfunction = function(j, i, t){
  exp(
- -ccLambda13_frailty_lk(x = t, xdata = x[i], omega2 = omega13true1[i], scale13 = scale13_1, 
+ -cLambda13_frailty_lk(x = t, xdata = x[i], omega2 = omega13true1[i], scale13 = scale13_1, 
  shape13 = shape13_1, c13 = c13_1, beta13_1 = beta13_1) - 
- ccLambda12_frailty_lk(x = t, xdata = x[i], 
+ cLambda12_frailty_lk(x = t, xdata = x[i], 
  omega1 = omega12true1[i], scale12 = scale12_1, shape12 = shape12_1, c12 = c12_1, beta12_1 = beta12_1)) *
  lambda12_frailty(t, xdata = x[i], omega1 = omega12true1[i], scale12 = scale12_1, shape12 = shape12_1,
  c12 = c12_1, beta12_1 = beta12_1)* 
- exp(-ccLambda23_frailty_lk(x = tau_t - t, xdata = x[i], omega3 = omega23true1[i], scale23 = scale23_1, 
+ exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = x[i], omega3 = omega23true1[i], scale23 = scale23_1, 
  shape23 = shape23_1,
  c23 = c23_1, theta23 = theta23_1, v_predict = t, beta23_1 = beta23_1))
  }
@@ -427,18 +425,15 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  error = function(error_condition) { NA}
  ) 
  
- # print(y)
- L12 = ccLambda12_frailty_lk(x = tau_t, xdata = x[i], shape12 = shape12_1,
+ L12 = cLambda12_frailty_lk(x = tau_t, xdata = x[i], shape12 = shape12_1,
  omega1 = omega12true1[i], scale12 = scale12_1, c12 = c12_1, beta12_1 = beta12_1)
- L13 = ccLambda13_frailty_lk(x = tau_t, xdata = x[i], omega2 = omega13true1[i], scale13 = scale13_1, shape13 = shape13_1,
+ L13 = cLambda13_frailty_lk(x = tau_t, xdata = x[i], omega2 = omega13true1[i], scale13 = scale13_1, shape13 = shape13_1,
  c13 = c13_1, beta13_1 = beta13_1)
  
  Fw = (exp(-L13 - L12) + y)
  if(Fw>1) Fw = NA
  Fw_1 = c(Fw_1, Fw)
  }
- 
- z = 1
  
  s0cumulative = -pweibull(q = tau_s, scale=1/scale12_0, shape= shape12_0, lower = F, log = T)*exp(beta12_0*x + c12_0*omega12true0)
  s1cumulative = -pweibull(q = tau_s, scale=1/scale12_1, shape= shape12_1, lower = F, log = T)*exp(beta12_1*x + c12_1*omega12true1)
@@ -1381,7 +1376,7 @@ for(i in 1:(n/2)){
               omega1 = o12save0flip[i],  scale12 = holdscale12_0[z], shape12 = holdshape12_0[z], c12 = holdc12_0[z], beta12_1 = holdbeta12_0[z])) *
    lambda12_frailty(t, xdata = xtrue[i], omega1 = o12save0[i], scale12 = holdscale12_0[z], shape12 = holdshape12_0[z],
             c12 = holdc12_0[z], beta12_1 = holdbeta12_0[z]) * 
-   exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = xtrue[i], omega1 = o12save0flip[i], omega2 = o13save0flip[i], scale23 = holdscale23_0[z], 
+   exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = xtrue[i], omega3 = o13save0flip[i], scale23 = holdscale23_0[z], 
                 shape23 = holdshape23_0[z],  c23 = holdc23_0[z], theta23 = holdtheta23_0[z], v_predict = t, beta23_1 = holdbeta23_0[z]
    ))
  }
@@ -1410,7 +1405,7 @@ for(i in 1:(n/2)){
               omega1 = o12save1flip[i],  scale12 = holdscale12_1[z], shape12 = holdshape12_1[z], c12 = holdc12_1[z], beta12_1 = holdbeta12_1[z])) *
    lambda12_frailty(t, xdata = xtrue[i], omega1 = o12save1flip[i], scale12 = holdscale12_1[z], shape12 = holdshape12_1[z],
             c12 = holdc12_1[z], beta12_1 = holdbeta12_1[z])* 
-   exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = xtrue[i], omega1 = o12save1flip[i], omega2 = o13save1flip[i], scale23 = holdscale23_1[z], 
+   exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = xtrue[i], omega3 = o13save1flip[i], scale23 = holdscale23_1[z], 
                 shape23 = holdshape23_1[z], c23 = holdc23_1[z], theta23 = holdtheta23_1[z], v_predict = t, beta23_1 = holdbeta23_1[z]))
  }
 
@@ -1471,16 +1466,13 @@ result = list(params = params, saveCEPx = saveCEPx, saveCEPy = saveCEPy,
        accept.rate = accept1/(SIM - burnin), 
        args = list(SIM = SIM, burnin = burnin, n = n))
 
-
 return(result)
 
 }
 
 set.seed(1 + array_id)
 
-params_res = run_sim(SIM = SIM, rhos = rhos, rhot = rhot, frailtysd = frailtysd, params_list = true_params, dat0 = dat0, dat1 = dat1, n = n
-         )
-
+params_res = run_sim(SIM = SIM, rhos = rhos, rhot = rhot, frailtysd = frailtysd, params_list = true_params, dat0 = dat0, dat1 = dat1, n = n)
 
 pseudo_data = sim_data(n = 760, rhot = 0.5, rhos = 0.5, rhost = 0.5, scenario = 2, effecttheta = T, frailtysd = 0.5, effectsize = 0.3)
 pseudo_data0 = pseudo_data$dat0
