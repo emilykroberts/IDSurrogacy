@@ -5,7 +5,7 @@ array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
 if(is.na(array_id)) array_id = 1
 {n = 600
 rhost = rhos = .5; rhot = .5
-SIM = 200
+SIM = 2000
 holdtheta = F
 holdscale12 = F
 holdscale23 = F
