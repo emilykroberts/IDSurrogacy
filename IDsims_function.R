@@ -1,9 +1,14 @@
+# Data Analysis and Simulation Code for Illness-Death Models Surrogacy Validation
+
+# Load required packages
+
 library(truncnorm); library(latex2exp); library(cowplot)
 library(ggplot2); library(survival); library(survminer); library(frailtyEM); library(frailtypack)
 
 array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
 if(is.na(array_id)) array_id = 1
-{n = 600
+# Define simulation scenarios
+n = 600
 rhost = rhos = .5; rhot = .5
 SIM = 2000
 holdtheta = F
@@ -30,7 +35,7 @@ proposalsdfrail = 0.005
 
 write = T
 plotwrite = as.numeric(array_id == 10)
-}
+
 
 sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, rhost, effectsize){
 
@@ -1510,14 +1515,9 @@ prepdata = function(n){
  plot(a)
 
  ci_fit = 
-  cmprsk::cuminc(
-   ftime = rtog$metastatic_prostate_cancer_years, 
-   fstatus = rtog$metastatic_prostate_cancer, 
-   group = rtog$rx - 1,
-   cencode = 0
-  )
+  cmprsk::cuminc(ftime = rtog$metastatic_prostate_cancer_years, 
+   fstatus = rtog$metastatic_prostate_cancer, group = rtog$rx - 1, cencode = 0 )
 
- 
  # cumulative incidence of T
  a = cmprsk::cuminc(rtog$survival_years, fstatus = rtog$survival, group = rtog$rx, cencode = 0)
  plot(a)
@@ -1562,7 +1562,6 @@ prepdata = function(n){
  exp(-coef(ts_mod2)["trt"])
  
  # KM plots
- 
  rtog$metastatic_prostate_cancer_cause = as.numeric(rtog$metastatic_prostate_cancer == 1)
  rtog$metastatic_prostate_cancer_years_comp = as.numeric(rtog$metastatic_prostate_cancer_years != 0)
 
@@ -1587,16 +1586,11 @@ prepdata = function(n){
  return(list(dat0, dat1, n))
 }
 
-dat = prepdata(n = 376*2)
-
-params_res_data = run_sim(SIM = SIM, rhos = rhos, rhot = rhot, frailtysd = frailtysd, params_list = true_params,
-             dat0 = dat[[1]], dat1 = dat[[2]], n = 376*2)
-
 plot_traceplots = function(params_matrix, variable){
- param = params_matrix$params
- 
- plot(eval(parse(text = paste0("param$", variable))), ylab = "Parameter Draw",
-    xlab = "MCMC Iteration", main = paste("Traceplot of Parameter", variable))
+  param = params_matrix$params
+  
+  plot(eval(parse(text = paste0("param$", variable))), ylab = "Parameter Draw",
+       xlab = "MCMC Iteration", main = paste("Traceplot of Parameter", variable))
 }
 
 
@@ -1613,10 +1607,6 @@ plot_traceplots(params_matrix = params_res, variable = "scale12_1")
 
 plot_traceplots(params_matrix = params_res, variable = "theta23_0")
 plot_traceplots(params_matrix = params_res, variable = "theta23_1")
-
-
-plot_traceplots(params_matrix = params_res_data, variable = "int")
-plot_traceplots(params_matrix = params_res_data, variable = "slope")
 
 
 final_results = function(params_matrix, write){
@@ -1786,8 +1776,53 @@ plot_results = function(params_matrix, write){
 
 final_results(params_matrix = params_res, write = write)
 
-final_results(params_matrix = params_res_data, write = write)
 
 plot_results(params_matrix = params_res, write = plotwrite)
 
+
+# generate the simulated dataset showing similar characteristics as the one analysed
+# in the article:
+
+dat = prepdata(n = 376*2)
+
+params_res_data = run_sim(SIM = SIM, rhos = rhos, rhot = rhot, frailtysd = frailtysd, params_list = true_params,
+                          dat0 = dat[[1]], dat1 = dat[[2]], n = 376*2)
+
+
+
+
+final_results(params_matrix = params_res_data, write = write)
+
 plot_results(params_matrix = params_res_data, write = plotwrite)
+
+# read in results
+library(here); library(xtable)
+setwd("~/OneDrive - University of Iowa/Sims")
+fil = '2'
+
+params <- do.call(rbind, sapply(list.files(path=fil, pattern="params*", full.names=TRUE), read.table, head = TRUE, simplify = F)); round(colMeans(params)[c(T,F)], 3) # means
+
+xtable( rbind(rbind(round(colMeans(params[c(
+  "int", "slope", "shape12_0", "shape13_0", "shape23_0",
+  "shape12_1", "shape13_1", "shape23_1",
+  "scale12_0", "scale13_0", "scale23_0",
+  "scale12_1", "scale13_1", "scale23_1",
+  "theta23_0", "theta23_1"
+)], na.rm = T), 3)),
+
+rbind(round(colMeans(params[c(
+  "intse", "slopese", "shape12_0SE", "shape13_0SE", "shape23_0SE",
+  "shape12_1SE", "shape13_1SE", "shape23_1SE",
+  "scale12_0SE", "scale13_0SE", "scale23_0SE",
+  "scale12_1SE", "scale13_1SE", "scale23_1SE",
+  "theta23_0SE", "theta23_1SE"
+)], na.rm = T), 3)),
+
+rbind(round(apply(params[c(
+  "int", "slope", "shape12_0", "shape13_0", "shape23_0",
+  "shape12_1", "shape13_1", "shape23_1",
+  "scale12_0", "scale13_0", "scale23_0",
+  "scale12_1", "scale13_1", "scale23_1",
+  "theta23_0", "theta23_1"
+)], 2, FUN = sd, na.rm = T), 3))))
+
