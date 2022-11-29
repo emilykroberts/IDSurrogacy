@@ -155,10 +155,6 @@ sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, r
   ST[ST[,3] > ST[,1], 3] = ST[ST[,3] > ST[,1], 1]
   ST[ST[,6] > ST[,4], 6] = ST[ST[,6] > ST[,4], 4]
   
-  #status[ST>10] = 0
-  #ST[ST>10] = 10 # admin censoring
-
-  
   ST[which(status[,1] == 0), 2] = NA
   ST[which(status[,4] == 0), 5] = NA
   

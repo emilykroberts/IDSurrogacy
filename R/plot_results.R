@@ -24,8 +24,6 @@ plot_results = function(params_matrix, write){
 
  slope = params_matrix$params$slope
  int = params_matrix$params$int
- 
- burnin = sim - 50
 
  d = ggplot(dat, aes(X, Y), col(c(rep(0, n/2), rep(1, n/2)))) + ylim(c(-1, 1)) +
  ggtitle("Illness-Death CEP Curve" ) + xlab("Delta S_i")+ 

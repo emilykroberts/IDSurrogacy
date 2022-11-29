@@ -43,12 +43,6 @@ params<-data.frame(c12_0=numeric(1), c12_0SE=numeric(1),
  beta12_1=numeric(1), beta12_1SE=numeric(1), 
  beta13_1=numeric(1), beta13_1SE=numeric(1), 
  beta23_1=numeric(1), beta23_1SE=numeric(1)
- # accept1=numeric(1), accept2=numeric(1),
- # accept3=numeric(1), accept4=numeric(1),
- # accept5=numeric(1), accept6=numeric(1),
- # accept7=numeric(1), accept8=numeric(1),
- # accept9=numeric(1), accept10=numeric(1),
- # accept10=numeric(1), accept12=numeric(1)
 )
 
  params[1]<-mean(params_matrix$params$c12_0[burnin:(SIM-1)], na.rm = T)
@@ -105,20 +99,7 @@ params<-data.frame(c12_0=numeric(1), c12_0SE=numeric(1),
  params[50]<-sqrt(var(params_matrix$params$beta13_1[burnin:(SIM-1)], na.rm = T))
  params[51]<-mean(params_matrix$params$beta23_1[burnin:(SIM-1)], na.rm = T)
  params[52]<-sqrt(var(params_matrix$params$beta23_1[burnin:(SIM-1)], na.rm = T))
- # 
- # params[53]<-accept1/z
- # params[54]<-accept2/z
- # params[55]<-accept3/z
- # params[56]<-accept4/z
- # params[57]<-accept5/z
- # params[58]<-accept6/z
- # params[59]<-accept7/z
- # params[60]<-accept8/z
- # params[61]<-accept9/z
- # params[62]<-accept10/z
- # params[63]<-accept11/z
- # params[64]<-accept12/z
- # 
+
  params$int = mean(params_matrix$params$int, na.rm = T)
  params$intse = sd(params_matrix$params$int, na.rm = T)
  params$slope = mean(params_matrix$params$slope, na.rm = T)

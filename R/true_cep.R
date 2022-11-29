@@ -28,7 +28,6 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  }
  
  
- 
  for(i in 1:n){
  y =tryCatch({ integrate(f = intfunction, lower = 0, upper = tau_t, i = i, j = j)$val
  },
@@ -89,8 +88,6 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  dat$x = x
  
  reg_true = reg = lm(formula = Y ~ log(X), data=dat) 
- reg_true
- 
  
  fname <- paste('cep','.n',n,array_id,'.txt',sep="")
  res = cbind(summary(reg)$coef[1,1], summary(reg)$coef[2,1])
@@ -108,7 +105,6 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  
  theme(text = element_text(size = 16))+
  geom_smooth(method='lm', level = 0.95) + coord_cartesian(xlim = c(-5,5)); 
- 
  
  d2 = d2 + theme(axis.title.x = element_text(# also adjust text size if needed
  margin = margin(t = 5, r = 0, b = 50, l = 0,

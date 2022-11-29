@@ -1,58 +1,57 @@
-library(MASS); library(mvtnorm); library(MCMCpack); library(LaplacesDemon)
+library(truncnorm); library(latex2exp); library(cowplot); library(xtable)
 library(ggplot2); library(survival); library(survminer); library(frailtyEM); library(frailtypack)
-library(truncnorm); library(latex2exp); library(kableExtra); library(Rfast)
-library(xtable); library(ggforce); library(wesanderson); library(cowplot); library(here)
+library(here)
 
-array_id = 1; array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
+setwd("./R")
+
+array_id = 1; array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID')) # allows for running on cluster
 if(is.na(array_id)) array_id = 1
-{n = 600
-rhost = rhos = .5; rhot = .5
+n = 600 # set various parameters to run simulations
+rhost = rhos = rhot = .5
 SIM = 3000
-holdtheta = F
-cep = T
-holdscale12 =
-holdscale23 = 
-holdscale13 = F
-
-equalfrail = T
-independent = T
-diffscale1323 = T
-holdshape = F
-
-holdc = T
-holdc23 = T
-
-proposalsd = 0.1
-proposalsdfrail = 0.003
 
 effecttheta = F
 holdfrail12 = F 
 holdfrail13 = F
+holdtheta = F
+holdscale12 =
+holdscale23 = 
+holdscale13 = F
+holdc = T
+holdc23 = T
+holdshape = F
+
+equalfrail = T
+independent = T
+diffscale1323 = T
+
+proposalsd = 0.1
+proposalsdfrail = 0.003
+frailtysd = 0.4
+
+cep = T
 tau_s = 1
 tau_t = 2
-frailtysd = 0.4
 
 ss = rep(1:8, 100)
 scenario = ss[array_id]
 
 write = T
-plotwrite = as.numeric(array_id == 10)
-}
+plotwrite = T
 
-setwd("/R") # keep source files in a folder called R directory
-list.files()
-for(i in 1:(length(list.files()))){
-  source(  list.files()[i]
-)
+# keep source files in a folder called R directory
+for(i in 1:(length(list.files(pattern = "\\.R$")))){
+    source(list.files(pattern = "\\.R$")[i]
+ )
 }
 
 set.seed(1 + array_id)
 
+# simulate data
 dat = sim_data(n = n, array_id = array_id, scenario = scenario, effecttheta = effecttheta,
-               rhos = rhos, rhot = rhot, rhost = rhost, frailtysd = frailtysd, diffscale1323 = diffscale1323)
+      rhos = rhos, rhot = rhot, rhost = rhost, frailtysd = frailtysd, diffscale1323 = diffscale1323)
 
 dat0 = dat$dat0
-
 dat1 = dat$dat1
 omega12true0 = o12save0 = dat$o12save0
 omega12true1 = o12save1 = dat$o12save1
@@ -63,13 +62,17 @@ omega23true1 = o23save1 = dat$o23save1
 
 true_params = dat$params
 
+setwd("./results") # save results about true CEP curve and simulations in results folder
+
 true_cep(dat0 = dat0, dat1 = dat1, write = write, params_list = true_params, plotwrite = plotwrite)
 
 params_list = true_params
 
+# run simulation
 set.seed(1  + array_id)
 params_res = run_sim(SIM = SIM, rhos = rhos, rhot = rhot, frailtysd = frailtysd, params_list = true_params)
 
+# view results
 plot_traceplots(params_matrix = params_res, variable = "int")
 plot_traceplots(params_matrix = params_res, variable = "slope")
 
@@ -77,10 +80,10 @@ final_results(params_matrix = params_res, write = write)
 
 plot_results(params_matrix = params_res, write = plotwrite)
 
+### after simulations are run, can read in results or analyze pseudo data example based on where results are stored
+if(F){
 # read in results from many simulations
-if(F){library(xtable)
-
-params <- do.call(rbind, sapply(list.files(path=fil, pattern="params,1", full.names=TRUE), read.table, head = TRUE, simplify = F)); round(colMeans(params)[c(T,F)], 3) # means
+params <- do.call(rbind, sapply(list.files(pattern="params,1", full.names=TRUE), read.table, head = TRUE, simplify = F)); round(colMeans(params)[c(T,F)], 3) # means
 
 xtable( rbind(rbind(round(colMeans(params[c(
   "int", "slope", "shape12_0", "shape13_0", "shape23_0",
@@ -107,52 +110,52 @@ rbind(round(apply(params[c(
 )], 2, FUN = sd, na.rm = T), 3))))
 
 ####
-# create plots for real data
+setwd('..')
 
-rtog = read.csv("~/Dropbox (University of Michigan)/rtog9601/NCT00002874-D1-Dataset.csv")
-rtog = rtog[rtog$include_in_analysis == 1,]
+# create plots for real data
+setwd('..')
+rtog = read.csv("simulated_data.csv")
 ST = (cbind(rtog$metastatic_prostate_cancer_years, rtog$survival_years - rtog$metastatic_prostate_cancer_years,
      rtog$survival_years))
 status = cbind(as.numeric(rtog$metastatic_prostate_cancer == 1), as.numeric(rtog$metastatic_prostate_cancer == 1 &
      rtog$survival == 1), as.numeric(rtog$survival == 1 & rtog$metastatic_prostate_cancer == 2))
 
-ST = data.frame(cbind(ST, status))
+ST = data.frame(cbind(ST, status, rtog$trt))
 names(ST) = c("y12", "y23", "y13", "s12", "s23", "s13")
-ST$trt = rtog$rx - 1
 
-# competing risk plots
-a = cmprsk::cuminc(rtog$metastatic_prostate_cancer_years, fstatus = rtog$metastatic_prostate_cancer, 
-                     cencode = 0)
-plot(a)
+dat0 = ST[ST$trt == 0,] # put data in form for run_sim function for analysis
+dat1 = ST[ST$trt == 1,]
   
-ci_fit = cmprsk::cuminc(ftime = rtog$metastatic_prostate_cancer_years, 
-      fstatus = rtog$metastatic_prostate_cancer, group = rtog$rx - 1, cencode = 0)
-
 # cumulative incidence of S
-mstatcumul = mstate::Cuminc(time = rtog$metastatic_prostate_cancer_years, status = rtog$metastatic_prostate_cancer , data = rtog)
-plot(mstatcumul, conf.int = .95, xlab = "Time (years)",use.ggplot = TRUE, main = "Cumulative Incidence for Surrogate Endpoint S", lty = 1:4)
-
-ci = mstate::Cuminc(time = rtog$metastatic_prostate_cancer_years, status = rtog$metastatic_prostate_cancer , data = rtog, group = rtog$rx , failcodes = c(1,2))
-ci1 = ci[ci$group == 1,]
-ci2 = ci[ci$group == 2,]
-plot(c(0, ci1$time, 15), c(0, ci1$CI.1, max(ci1$CI.1)),type = 's', xlim = c(0, 14), ylim = c(0,
-       1), lty = 'dashed', ylab = "Probability", xlab = "Years from Randomization",
+ci = mstate::Cuminc(time = rtog$metastatic_prostate_cancer_years, status = rtog$metastatic_prostate_cancer,
+                    data = rtog, group = rtog$trt, failcodes = c(1,2))
+ci1 = ci[ci$group == 0,]; ci2 = ci[ci$group == 1,]
+plot(c(0, ci1$time, max(ci1$time + 0.1)), c(0, ci1$CI.2, max(ci1$CI.2)),type = 's', ylim = c(0,1), lty = 'dashed', 
+       ylab = "Probability", xlab = "Time from Randomization",
        main = "Estimates based on the cumulative incidence functions\nBlack dashed line indicates z = 1, solid red line indicates z = 0",
-       lwd = 2); lines(c(0, ci2$time, 15), c(0, ci2$CI.2, max(ci2$CI.2)),type = 's', col = 'red')
+       lwd = 2); lines(c(0, ci2$time, max(ci2$time) + 0.1), c(0, ci2$CI.2, max(ci2$CI.2)),type = 's', col = 'red')
 
 # KM plots
-rtog$metastatic_prostate_cancer_cause = as.numeric(rtog$metastatic_prostate_cancer == 1)rtog$metastatic_prostate_cancer_years_comp = as.numeric(rtog$metastatic_prostate_cancer_years != 0)
+rtog$metastatic_prostate_cancer_cause = as.numeric(rtog$metastatic_prostate_cancer == 1)
+rtog$metastatic_prostate_cancer_years_comp = as.numeric(rtog$metastatic_prostate_cancer_years != 0)
 rtogs = rtog[rtog$metastatic_prostate_cancer == 1,]
 
-theme_set( theme_classic(base_size = 16))
+a = ggsurvplot(survfit(Surv(rtog$metastatic_prostate_cancer_years, rtog$metastatic_prostate_cancer_cause) ~ rtog$trt), 
+               data = rtog, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", 
+               legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + 
+               ggtitle("KM Curve of Intermediate Outcome S\n(Individuals are Censored at T)") + ylab("Freedom from S") + xlab("Time")
+b = ggsurvplot(survfit(Surv(rtog$survival_years, rtog$survival) ~ rtog$trt), data = rtog, risk.table = F, 
+               ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", 
+               legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + 
+  ggtitle("KM Curve of True Outcome T") + ylab("Freedom from T") + xlab("Time")
+c = ggsurvplot(survfit(Surv((rtogs$survival_years - rtogs$metastatic_prostate_cancer_years), rtogs$survival) ~ rtogs$trt), 
+               data = rtogs, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", 
+               legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + 
+               ggtitle("KM Curve of Time between S to T\nFor Those who Experienced S") + ylab("Freedom from T Survival (Post S)") + xlab("Time")
 
-a = ggsurvplot(survfit(Surv(rtog$metastatic_prostate_cancer_years, rtog$metastatic_prostate_cancer_cause) ~ rtog$rx), data = rtog, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of Intermediate Outcome S\n(Individuals are Censored at T)") + ylab("Freedom from S") + xlab("Time (years)")
-b = ggsurvplot(survfit(Surv(rtog$survival_years, rtog$survival) ~ rtog$rx), data = rtog, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of True Outcome T") + ylab("Freedom from T") + xlab("Time (years)")
-c = ggsurvplot(survfit(Surv((rtogs$survival_years - rtogs$metastatic_prostate_cancer_years), rtogs$survival) ~ rtogs$rx), data = rtogs, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of Time between S to T\nFor Those who Experienced S") + ylab("Freedom from T Survival (Post S)") + xlab("Time (years)")
-
-ggsave(file = "KM_S.jpeg", a$plot, width = 8, height = 8)
-ggsave(file = "KM_T.jpeg", b$plot, width = 8, height = 8)
-ggsave(file = "KM_ST.jpeg", c$plot, width = 8, height = 8)
+#ggsave(file = "KM_S.jpeg", a$plot, width = 8, height = 8) # save KM curves in manuscript
+#ggsave(file = "KM_T.jpeg", b$plot, width = 8, height = 8)
+#ggsave(file = "KM_ST.jpeg", c$plot, width = 8, height = 8)
 }
 
 
