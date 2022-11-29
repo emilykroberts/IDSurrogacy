@@ -28,7 +28,7 @@ Based on the estimation in run_sim.R, the draws of parameters from the MCMC and 
       
 plot_results.R displays the estimated CEP curve from a dataset, and plot_traceplots.R  is a diagnostic tool to examine the traceplots of the parameter draws.
 
-Finally, IDsims.R is a file to set up parameter values and generate simulation results found in the main paper. Once this file is run, .txt files are created with the results. These results can be read in using code also found in the file to create a table suitable for LaTeX. Code is also provided for the plots for the data example, and a sample data set to mimic features of the data is included.
+Finally, IDsims.R is a file to set up parameter values and generate simulation results found in the main paper. Once this file is run, .txt files are created with the results. These results can be read in using code also found in the file to create a table suitable for LaTeX. Code is also provided for the plots for the data example, and a sample data set to mimic features of the data is available.
 
 ### Contributing 
 
