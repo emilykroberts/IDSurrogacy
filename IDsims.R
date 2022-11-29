@@ -75,12 +75,10 @@ plot_traceplots(params_matrix = params_res, variable = "slope")
 
 final_results(params_matrix = params_res, write = write)
 
- 
 plot_results(params_matrix = params_res, write = plotwrite)
 
-
 # read in results from many simulations
-library(xtable)
+if(F){library(xtable)
 
 params <- do.call(rbind, sapply(list.files(path=fil, pattern="params,1", full.names=TRUE), read.table, head = TRUE, simplify = F)); round(colMeans(params)[c(T,F)], 3) # means
 
@@ -112,109 +110,50 @@ rbind(round(apply(params[c(
 # create plots for real data
 
 rtog = read.csv("~/Dropbox (University of Michigan)/rtog9601/NCT00002874-D1-Dataset.csv")
- rtog = rtog[rtog$include_in_analysis == 1,]
- ST = (cbind(rtog$metastatic_prostate_cancer_years, rtog$survival_years - rtog$metastatic_prostate_cancer_years,
-       rtog$survival_years))
- status = cbind(as.numeric(rtog$metastatic_prostate_cancer == 1), as.numeric(rtog$metastatic_prostate_cancer == 1 &
-                                        rtog$survival == 1), as.numeric(rtog$survival == 1 & rtog$metastatic_prostate_cancer == 2))
- 
- ST = data.frame(cbind(ST, status))
- names(ST) = c("y12", "y23", "y13", "s12", "s23", "s13")
- 
- ST$trt = rtog$rx - 1
- dat0 = data.frame(ST[ST$"trt" == 0,])
- dat1 = data.frame(ST[ST$"trt" == 1,])
- 
- dat0 = dat0[1:(n/2), ]
- dat1 = dat1[1:(n/2), ]
- 
- # run prentice criteria
- time23 = rowSums(cbind(ST[,1], ST[,2]), na.rm = T)
- time23[status[,1] == 0] = NA
- Ttime = apply(cbind(ST[,3], time23), 1, min, na.rm = T) 
- Tstat = apply(cbind(status[,3], status[,1]), 1, max, na.rm = T) 
- 
- if(F){
- # 0 = censored, 1 = outcome of interest, 2 = competing event
- a = cmprsk::cuminc(rtog$metastatic_prostate_cancer_years, fstatus = rtog$metastatic_prostate_cancer, 
-           cencode = 0)
- plot(a)
+rtog = rtog[rtog$include_in_analysis == 1,]
+ST = (cbind(rtog$metastatic_prostate_cancer_years, rtog$survival_years - rtog$metastatic_prostate_cancer_years,
+     rtog$survival_years))
+status = cbind(as.numeric(rtog$metastatic_prostate_cancer == 1), as.numeric(rtog$metastatic_prostate_cancer == 1 &
+     rtog$survival == 1), as.numeric(rtog$survival == 1 & rtog$metastatic_prostate_cancer == 2))
 
- ci_fit = 
-  cmprsk::cuminc(
-   ftime = rtog$metastatic_prostate_cancer_years, 
-   fstatus = rtog$metastatic_prostate_cancer, 
-   group = rtog$rx - 1,
-   cencode = 0
-  )
+ST = data.frame(cbind(ST, status))
+names(ST) = c("y12", "y23", "y13", "s12", "s23", "s13")
+ST$trt = rtog$rx - 1
 
- 
- # cumulative incidence of T
- a = cmprsk::cuminc(rtog$survival_years, fstatus = rtog$survival, group = rtog$rx, cencode = 0)
- plot(a)
- 
- # cumulative incidence of S
- mstatcumul = mstate::Cuminc(time = rtog$metastatic_prostate_cancer_years, status = rtog$metastatic_prostate_cancer , data = rtog)
- 
- plot(mstatcumul, conf.int = .95, xlab = "Time (years)",use.ggplot = TRUE, main = "Cumulative Incidence for Surrogate Endpoint S", lty = 1:4)
- 
- ci = mstate::Cuminc(time = rtog$metastatic_prostate_cancer_years, status = rtog$metastatic_prostate_cancer , data = rtog, group = rtog$rx , failcodes = c(1,2))
- 
- ci1 = ci[ci$group == 1,]
- ci2 = ci[ci$group == 2,]
- 
- plot(c(0, ci1$time, 15), c(0, ci1$CI.1, max(ci1$CI.1)),
-    type = 's', xlim = c(0, 14), ylim = c(0,
-                       1), lty = 'dashed', ylab = "Probability", xlab = "Years from Randomization",
-    main = "Estimates based on the cumulative incidence functions\nBlack dashed line indicates z = 1, solid red line indicates z = 0",
-    lwd = 2); lines(c(0, ci2$time, 15), c(0, ci2$CI.2, max(ci2$CI.2)),
-            type = 's', col = 'red')
- }
- 
- t_mod = coxph(Surv(Ttime, Tstat) ~ trt, dat = ST)
- ts_mod = coxph(Surv(Ttime, Tstat) ~ y12 + trt, dat = ST)
- s_mod = coxph(Surv(y12, s12) ~ trt, dat = ST)
- 
- as.numeric(summary(s_mod)$coefficients[,"Pr(>|z|)"] < 0.05)
- summary(t_mod)
- summary(ts_mod)
- 
- exp(-coef(ts_mod)["trt"])
- exp(-coef(t_mod)["trt"])
- ST$id = 1:(nrow(ST))
+# competing risk plots
+a = cmprsk::cuminc(rtog$metastatic_prostate_cancer_years, fstatus = rtog$metastatic_prostate_cancer, 
+                     cencode = 0)
+plot(a)
+  
+ci_fit = cmprsk::cuminc(ftime = rtog$metastatic_prostate_cancer_years, 
+      fstatus = rtog$metastatic_prostate_cancer, group = rtog$rx - 1, cencode = 0)
 
- ST$Ttime = Ttime
- ST$Tstat = Tstat
- 
- new = tmerge(data1 = ST, data2 = ST, id = id, tstop = rtog$survival_years)
- new2 = tmerge(data1 = new, data2 = ST, id = id, ev = event(y12))
- 
- ts_mod2 = coxph(Surv(Ttime, Tstat) ~ y12 + trt, dat = new2, cluster = id)
- exp(-coef(ts_mod2)["trt"])
- 
- # KM plots
- 
- rtog$metastatic_prostate_cancer_cause = as.numeric(rtog$metastatic_prostate_cancer == 1)
- rtog$metastatic_prostate_cancer_years_comp = as.numeric(rtog$metastatic_prostate_cancer_years != 0)
+# cumulative incidence of S
+mstatcumul = mstate::Cuminc(time = rtog$metastatic_prostate_cancer_years, status = rtog$metastatic_prostate_cancer , data = rtog)
+plot(mstatcumul, conf.int = .95, xlab = "Time (years)",use.ggplot = TRUE, main = "Cumulative Incidence for Surrogate Endpoint S", lty = 1:4)
 
- theme_set( theme_classic(base_size = 16))
+ci = mstate::Cuminc(time = rtog$metastatic_prostate_cancer_years, status = rtog$metastatic_prostate_cancer , data = rtog, group = rtog$rx , failcodes = c(1,2))
+ci1 = ci[ci$group == 1,]
+ci2 = ci[ci$group == 2,]
+plot(c(0, ci1$time, 15), c(0, ci1$CI.1, max(ci1$CI.1)),type = 's', xlim = c(0, 14), ylim = c(0,
+       1), lty = 'dashed', ylab = "Probability", xlab = "Years from Randomization",
+       main = "Estimates based on the cumulative incidence functions\nBlack dashed line indicates z = 1, solid red line indicates z = 0",
+       lwd = 2); lines(c(0, ci2$time, 15), c(0, ci2$CI.2, max(ci2$CI.2)),type = 's', col = 'red')
 
- a = ggsurvplot(survfit(Surv(rtog$metastatic_prostate_cancer_years, rtog$metastatic_prostate_cancer_cause) ~ rtog$rx), data = rtog, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of Intermediate Outcome S\n(Individuals are Censored at T)") + ylab("Freedom from S") + xlab("Time (years)")
- a
+# KM plots
+rtog$metastatic_prostate_cancer_cause = as.numeric(rtog$metastatic_prostate_cancer == 1)rtog$metastatic_prostate_cancer_years_comp = as.numeric(rtog$metastatic_prostate_cancer_years != 0)
+rtogs = rtog[rtog$metastatic_prostate_cancer == 1,]
 
- b = ggsurvplot(survfit(Surv(rtog$survival_years, rtog$survival) ~ rtog$rx), data = rtog, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of True Outcome T") + ylab("Freedom from T") + xlab("Time (years)")
- b
+theme_set( theme_classic(base_size = 16))
 
- rtogs = rtog[rtog$metastatic_prostate_cancer == 1,]
- d = ggsurvplot(survfit(Surv((rtogs$survival_years - rtogs$metastatic_prostate_cancer_years), rtogs$survival) ~ rtogs$rx), data = rtogs, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of Time between S to T\nFor Those who Experienced S") + ylab("Freedom from T Survival (Post S)") + xlab("Time (years)")
- d
- 
- if(F){
-  ggsave(file = "KM_S.jpeg", a$plot, width = 8, height = 8)
-  ggsave(file = "KM_T.jpeg", b$plot, width = 8, height = 8)
-  ggsave(file = "KM_ST.jpeg", d$plot, width = 8, height = 8)
- }
- 
+a = ggsurvplot(survfit(Surv(rtog$metastatic_prostate_cancer_years, rtog$metastatic_prostate_cancer_cause) ~ rtog$rx), data = rtog, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of Intermediate Outcome S\n(Individuals are Censored at T)") + ylab("Freedom from S") + xlab("Time (years)")
+b = ggsurvplot(survfit(Surv(rtog$survival_years, rtog$survival) ~ rtog$rx), data = rtog, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of True Outcome T") + ylab("Freedom from T") + xlab("Time (years)")
+c = ggsurvplot(survfit(Surv((rtogs$survival_years - rtogs$metastatic_prostate_cancer_years), rtogs$survival) ~ rtogs$rx), data = rtogs, risk.table = F, ggtheme = theme_classic2(base_size=20), legend.title = "Treatment", legend.labs=c("With antiandrogen\ntherapy","Without antiandrogen\ntherapy ")) + ggtitle("KM Curve of Time between S to T\nFor Those who Experienced S") + ylab("Freedom from T Survival (Post S)") + xlab("Time (years)")
+
+ggsave(file = "KM_S.jpeg", a$plot, width = 8, height = 8)
+ggsave(file = "KM_T.jpeg", b$plot, width = 8, height = 8)
+ggsave(file = "KM_ST.jpeg", c$plot, width = 8, height = 8)
+}
 
 
 
