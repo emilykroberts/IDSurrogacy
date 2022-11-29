@@ -15,8 +15,20 @@ c = sum((c13_0 * omega13_z0)* dat0$s13[i], na.rm = T) *
  ((scale13_0* sum(dat0$y13[i] ^ (shape13_0) *exp(c13_0 * omega13_z0), na.rm = T)) )
 
 d = (c(c23_0, theta23_0) * (dat0$s23[i] %*% (cbind(omega13_z0, dat0$y12[i]))) -
- scale23_0/shape23_0 * sum(dat0$y23[i] ^ shape23_0 * exp(c23_0 * omega13_z0 +
- theta23_0 * dat0$y12[i]), na.rm = T))*dat0$s23[i] 
+ scale23_0* sum(dat0$y23[i] ^ shape23_0 * exp(c23_0 * omega13_z0 +
+ theta23_0 * dat0$y12[i]), na.rm = T))
+ 
+ c =  (((1/shape13_0) - 1) * (sum(log(dat0$y13[i] ^ dat0$s13), na.rm = T)) - 
+ scale13_0 * shape13_0 * sum(dat0$y13[i] ^ (1/shape13_0) * exp(c13_0 * omega13_z0
+ ), na.rm = T))
+ 
+ 
+ d = ((1/shape23_0 - 1) * (sum(log(dat0$y23[i] ^ dat0$s23[i]), na.rm = T)) -
+ scale23_0 * shape23_0 * sum(dat0$y23[i] ^ (1/shape23_0) * exp(c23_0 * omega13_z0
+ ), na.rm = T))
+
+ 
+ 
 e = sum(c, d, na.rm = T)
 
 return(e)
