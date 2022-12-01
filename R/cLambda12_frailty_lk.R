@@ -1,9 +1,16 @@
 #' likelihood function
 #'
-#' @description evaluate likelihood ...
+#' @description evaluate cumulative hazard
 #'
-#' @param weibull model parameters
-#'
+#' @param
+#' x
+#' xdata1
+#' omega1
+#' shape12
+#' scale12
+#' c12
+#' beta12_1
+#' 
 #' @return likelihood
 #'
 #' @examples

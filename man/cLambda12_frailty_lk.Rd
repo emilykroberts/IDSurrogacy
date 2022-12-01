@@ -7,13 +7,18 @@
 cLambda12_frailty_lk(x, xdata1, omega1, shape12, scale12, c12, beta12_1)
 }
 \arguments{
-\item{weibull}{model parameters}
+\item{x}{xdata1
+omega1
+shape12
+scale12
+c12
+beta12_1}
 }
 \value{
 likelihood
 }
 \description{
-evaluate likelihood ...
+evaluate cumulative hazard
 }
 \examples{
 example(cLambda12_frailty_lk(x = 1, xdata1 = 0, omega1 = 1, shape12 = 1, scale12 = 1, c12 = 1, beta12_1 = 0))
