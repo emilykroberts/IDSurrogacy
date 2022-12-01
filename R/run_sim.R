@@ -342,7 +342,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
                log(shape13prior_p)-(like13_shape(dat0 = dat0, c13_0 = holdc13_0[z - 1],
                shape13_0 = holdshape13_0[z - 1], scale13_0 = scale13_0_star, omega13_z0 = omega13_z0)+ log(shape13prior_c)) )
     
-   p2 = exp( like23_theta(theta23 = theta23_0_star, dat0 = dat0,c23_0 = holdc23_0[z - 1], omega13_z0 = omega13_z0,
+   p2 = exp( like23_theta(theta23_0 = theta23_0_star, dat0 = dat0,c23_0 = holdc23_0[z - 1], omega13_z0 = omega13_z0,
                	  shape23_0 = holdshape23_0[z - 1], scale23_0 = holdscale23_0[z - 1]) + log(theta23prior_p) + log(theta23prop_p) -
                   (like23_theta(theta23_0 = holdtheta23_0[z - 1],dat0 = dat0, omega13_z0 = omega13_z0, c23_0 = holdc23_0[z - 1],
                   shape23_0 = holdshape23_0[z - 1], scale23_0 = holdscale23_0[z - 1])+ log(theta23prior_c) + log(theta23prop_c)) +
@@ -587,7 +587,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
               (like13_shape1(shape13_1 = holdshape13_1[z - 1], scale13_1 = holdscale13_1[z - 1], dat1 = dat1,
               omega13_z1 = omega13_z1, c13_1 = c13_1_star)+ log(shape13prior_c)))
 
-   p2 = exp( like23_theta1(theta23 = theta23_1_star, dat1 = dat1,c23_1 = holdc23_1[z - 1], omega13_z1 = omega13_z1,
+   p2 = exp( like23_theta1(theta23_1 = theta23_1_star, dat1 = dat1,c23_1 = holdc23_1[z - 1], omega13_z1 = omega13_z1,
                   shape23_1 = holdshape23_1[z - 1], scale23_1 = holdscale23_1[z - 1])+
                   log(theta23prior_p) + log(theta23prop_p) -
                   (like23_theta1(theta23_1 = holdtheta23_1[z - 1],dat1 = dat1, omega13_z1 = omega13_z1, c23_1 = holdc23_1[z - 1],
@@ -642,13 +642,13 @@ if(cep){
   
   intfunction = function(j, i, t){
     exp(
-      -cLambda13_frailty_lk(x = t, xdata = xtrue[i], omega2 = o13save0flip[i], scale13 = holdscale13_0[z], 
+      -cLambda13_frailty_lk(x = t, xdata1 = xtrue[i], omega2 = o13save0flip[i], scale13 = holdscale13_0[z], 
       shape13 = holdshape13_0[z],   c13 = holdc13_0[z], beta13_1 = holdbeta13_0[z]) - 
-       cLambda12_frailty_lk(x = t, xdata = xtrue[i], 
+       cLambda12_frailty_lk(x = t, xdata1 = xtrue[i], 
       omega1 = o12save0flip[i],   scale12 = holdscale12_0[z], shape12 = holdshape12_0[z], c12 = holdc12_0[z], beta12_1 = holdbeta12_0[z])) *
-      lambda12_frailty(t, xdata = xtrue[i], omega1 = o12save0[i], scale12 = holdscale12_0[z], shape12 = holdshape12_0[z],
+      lambda12_frailty(t, xdata1 = xtrue[i], omega1 = o12save0[i], scale12 = holdscale12_0[z], shape12 = holdshape12_0[z],
       c12 = holdc12_0[z], beta12_1 = holdbeta12_0[z]) * 
-      exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = xtrue[i], omega2 = o13save0flip[i], scale23 = holdscale23_0[z], 
+      exp(-cLambda23_frailty_lk(x = tau_t - t, xdata1 = xtrue[i], omega2 = o13save0flip[i], scale23 = holdscale23_0[z], 
       shape23 = holdshape23_0[z],   c23 = holdc23_0[z], theta23 = holdtheta23_0[z], v_predict = t, beta23_1 = holdbeta23_0[z]
    ))
   }
@@ -659,9 +659,9 @@ if(cep){
       NA}
     )  
     
-    L12 = cLambda12_frailty_lk(x = tau_t, xdata = xtrue[i], shape12 = holdshape12_0[z],
+    L12 = cLambda12_frailty_lk(x = tau_t, xdata1 = xtrue[i], shape12 = holdshape12_0[z],
                               omega1 = o12save0flip[i],   scale12 =holdscale12_0[z], c12 = holdc12_0[z], beta12_1 = holdbeta12_0[z])
-    L13 = cLambda13_frailty_lk(x = tau_t, xdata = xtrue[i], omega2 = o13save0flip[i], scale13 = holdscale13_0[z], shape13 = holdshape13_0[z],
+    L13 = cLambda13_frailty_lk(x = tau_t, xdata1 = xtrue[i], omega2 = o13save0flip[i], scale13 = holdscale13_0[z], shape13 = holdshape13_0[z],
                               c13 = holdc13_0[z], beta13_1 = holdbeta13_0[z])
     
     Fw =  (exp(-L13 - L12) + y)
@@ -671,13 +671,13 @@ if(cep){
   
   intfunction = function(j, i, t){
     exp(
-      -cLambda13_frailty_lk(x = t, xdata = xtrue[i], omega2 = o13save1flip[i], scale13 = holdscale13_1[z], 
+      -cLambda13_frailty_lk(x = t, xdata1 = xtrue[i], omega2 = o13save1flip[i], scale13 = holdscale13_1[z], 
         shape13 = holdshape13_1[z],   c13 = holdc13_1[z], beta13_1 = holdbeta13_1[z]) - 
-        cLambda12_frailty_lk(x = t, xdata = xtrue[i], 
+        cLambda12_frailty_lk(x = t, xdata1 = xtrue[i], 
         omega1 = o12save1flip[i],   scale12 = holdscale12_1[z], shape12 = holdshape12_1[z], c12 = holdc12_1[z], beta12_1 = holdbeta12_1[z])) *
-      lambda12_frailty(t, xdata = xtrue[i], omega1 = o12save1flip[i], scale12 = holdscale12_1[z], shape12 = holdshape12_1[z],
+      lambda12_frailty(t, xdata1 = xtrue[i], omega1 = o12save1flip[i], scale12 = holdscale12_1[z], shape12 = holdshape12_1[z],
         c12 = holdc12_1[z], beta12_1 = holdbeta12_1[z])* 
-      exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = xtrue[i], omega2 = o13save1flip[i], scale23 = holdscale23_1[z], 
+      exp(-cLambda23_frailty_lk(x = tau_t - t, xdata1 = xtrue[i], omega2 = o13save1flip[i], scale23 = holdscale23_1[z], 
         shape23 = holdshape23_1[z], c23 = holdc23_1[z], theta23 = holdtheta23_1[z], v_predict = t, beta23_1 = holdbeta23_1[z]))
   }
   ## for z = 1
@@ -687,9 +687,9 @@ if(cep){
     error = function(error_condition) {
       NA}
    )  
-    L12 =cLambda12_frailty_lk(x = tau_t, xdata = xtrue[i], shape12 = holdshape12_1[z],
+    L12 =cLambda12_frailty_lk(x = tau_t, xdata1 = xtrue[i], shape12 = holdshape12_1[z],
                              omega1 = o12save1flip[i],   scale12 =holdscale12_1[z], c12 = holdc12_1[z], beta12_1 = holdbeta12_1[z])
-    L13 = cLambda13_frailty_lk(x = tau_t, xdata = xtrue[i], omega2 = o13save1flip[i], scale13 = holdscale13_1[z], 
+    L13 = cLambda13_frailty_lk(x = tau_t, xdata1 = xtrue[i], omega2 = o13save1flip[i], scale13 = holdscale13_1[z], 
                               shape13 = holdshape13_1[z],   c13 = holdc13_1[z], beta13_1 = holdbeta13_1[z])
     
     Fw =  (exp(-L13 - L12) + y)

@@ -16,13 +16,13 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  
  intfunction = function(j, i, t){
  exp(
- -cLambda13_frailty_lk(x = t, xdata = x[i], omega2 = omega13true0[i], scale13 = scale13_0, 
+ -cLambda13_frailty_lk(x = t, xdata1 = x[i], omega2 = omega13true0[i], scale13 = scale13_0, 
  shape13 = shape13_0, c13 = c13_0, beta13_1 = beta13_0) - 
- cLambda12_frailty_lk(x = t, xdata = x[i], 
+ cLambda12_frailty_lk(x = t, xdata1 = x[i], 
  omega1 = omega12true0[i], scale12 = scale12_0, shape12 = shape12_0, c12 = c12_0, beta12_1 = beta12_0)) *
- lambda12_frailty(t, xdata = x[i], omega1 = omega12true0[i], scale12 = scale12_0, shape12 = shape12_0,
+ lambda12_frailty(t, xdata1 = x[i], omega1 = omega12true0[i], scale12 = scale12_0, shape12 = shape12_0,
  c12 = c12_0, beta12_1 = beta12_0)* 
- exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = x[i], omega2 = omega23true0[i], scale23 = scale23_0, 
+ exp(-cLambda23_frailty_lk(x = tau_t - t, xdata1 = x[i], omega2 = omega23true0[i], scale23 = scale23_0, 
  shape23 = shape23_0, 
  c23 = c23_0, theta23 = theta23_0, v_predict = t, beta23_1 = beta23_0))
  }
@@ -35,9 +35,9 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  NA}
  ) 
  
- L12 = cLambda12_frailty_lk(x = tau_t, xdata = x[i], shape12 = shape12_0,
+ L12 = cLambda12_frailty_lk(x = tau_t, xdata1 = x[i], shape12 = shape12_0,
  omega1 = omega12true0[i], scale12 =scale12_0, c12 = c12_0, beta12_1 = beta12_0)
- L13 = cLambda13_frailty_lk(x = tau_t, xdata = x[i], omega2 = omega13true0[i], scale13 = scale13_0, shape13 = shape13_0,
+ L13 = cLambda13_frailty_lk(x = tau_t, xdata1 = x[i], omega2 = omega13true0[i], scale13 = scale13_0, shape13 = shape13_0,
  c13 = c13_0, beta13_1 = beta13_0)
  
  Fw = (exp(-L13 - L12) + y)
@@ -47,13 +47,13 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  
  intfunction = function(j, i, t){
  exp(
- -cLambda13_frailty_lk(x = t, xdata = x[i], omega2 = omega13true1[i], scale13 = scale13_1, 
+ -cLambda13_frailty_lk(x = t, xdata1 = x[i], omega2 = omega13true1[i], scale13 = scale13_1, 
  shape13 = shape13_1, c13 = c13_1, beta13_1 = beta13_1) - 
- cLambda12_frailty_lk(x = t, xdata = x[i], 
+ cLambda12_frailty_lk(x = t, xdata1 = x[i], 
  omega1 = omega12true1[i], scale12 = scale12_1, shape12 = shape12_1, c12 = c12_1, beta12_1 = beta12_1)) *
- lambda12_frailty(t, xdata = x[i], omega1 = omega12true1[i], scale12 = scale12_1, shape12 = shape12_1,
+ lambda12_frailty(t, xdata1 = x[i], omega1 = omega12true1[i], scale12 = scale12_1, shape12 = shape12_1,
  c12 = c12_1, beta12_1 = beta12_1)* 
- exp(-cLambda23_frailty_lk(x = tau_t - t, xdata = x[i], omega2 = omega23true1[i], scale23 = scale23_1, 
+ exp(-cLambda23_frailty_lk(x = tau_t - t, xdata1 = x[i], omega2 = omega23true1[i], scale23 = scale23_1, 
  shape23 = shape23_1,
  c23 = c23_1, theta23 = theta23_1, v_predict = t, beta23_1 = beta23_1))
  }
@@ -66,9 +66,9 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite){
  ) 
  
  # print(y)
- L12 = cLambda12_frailty_lk(x = tau_t, xdata = x[i], shape12 = shape12_1,
+ L12 = cLambda12_frailty_lk(x = tau_t, xdata1 = x[i], shape12 = shape12_1,
  omega1 = omega12true1[i], scale12 = scale12_1, c12 = c12_1, beta12_1 = beta12_1)
- L13 = cLambda13_frailty_lk(x = tau_t, xdata = x[i], omega2 = omega13true1[i], scale13 = scale13_1, shape13 = shape13_1,
+ L13 = cLambda13_frailty_lk(x = tau_t, xdata1 = x[i], omega2 = omega13true1[i], scale13 = scale13_1, shape13 = shape13_1,
  c13 = c13_1, beta13_1 = beta13_1)
  
  Fw = (exp(-L13 - L12) + y)
