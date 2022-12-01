@@ -7,7 +7,12 @@
 like12_shape(shape12_0, scale12_0, dat0, c12_0, omega12_z0)
 }
 \arguments{
-\item{weibull}{model parameters}
+\item{weibull}{model parameters
+omega12_z0: frailty term
+shape12_0: shape of Weibull distribution
+scale12_0: scale of Weibull distribution
+c12_0: frailty coefficient
+dat0: data}
 }
 \value{
 likelihood

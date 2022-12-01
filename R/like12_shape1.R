@@ -2,7 +2,12 @@
 #'
 #' @description evaluate likelihood ...
 #'
-#' @param weibull model parameters
+#' @param
+#' omega12_z1: frailty term
+#' shape12_1: shape of Weibull distribution
+#' scale12_1: scale of Weibull distribution
+#' c12_1: frailty coefficient
+#' dat1: data
 #'
 #' @return likelihood
 #'

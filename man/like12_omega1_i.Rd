@@ -2,18 +2,23 @@
 % Please edit documentation in R/like12_omega1_i.R
 \name{like12_omega1_i}
 \alias{like12_omega1_i}
-\title{likelihood function}
+\title{likelihood function for frailty}
 \usage{
 like12_omega1_i(omega12_z1, i, scale12_1, dat1, shape12_1, c12_1)
 }
 \arguments{
-\item{weibull}{model parameters}
+\item{omega12_z1:}{frailty term
+i: index for individual in dataset
+dat1: dataset
+shape12_1: shape for Weibull distribution
+scale12_1: scale for Weibull distribution
+c12_1: frailty coefficient}
 }
 \value{
 likelihood
 }
 \description{
-evaluate likelihood ...
+evaluate likelihood for frailty for 1-2 transition
 }
 \examples{
 example(like12_omega1_i(omega12_z1 = 1, i = 1, scale12_1 = 1, dat1 = dat1, shape12_1 = 1, c12_1 = 1))

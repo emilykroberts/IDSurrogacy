@@ -1,8 +1,18 @@
-#' likelihood function
+#' likelihood function for frailty
 #'
-#' @description evaluate likelihood ...
+#' @description evaluate likelihood for frailty for 1-3 transition
 #'
-#' @param weibull model parameters
+#' @param
+#' omega13_z0: frailty term
+#' i: index for individual in dataset
+#' dat0: dataset
+#' shape13_0: shape for Weibull distribution
+#' scale13_0: scale for Weibull distribution
+#' c13_1: frailty coefficient
+#' shape23_0: shape for Weibull distribution
+#' scale23_0: scale for Weibull distribution
+#' c23_0: frailty coefficient
+#' theta23_0: theta parameter for 2-3 transition
 #'
 #' @return likelihood
 #'

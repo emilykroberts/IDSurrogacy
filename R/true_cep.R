@@ -2,9 +2,14 @@
 #'
 #' @description create cep true based on true values
 #'
-#' @param data and parameters
+#' @param
+#' dat0: data for placebo arm
+#' dat1: data for treatment arm
+#' write: logical value if results should be written to a file
+#' params_list: true values of parameters
+#' plotwrite: logical value if plot should be saved to a file
 #'
-#' @return cep values
+#' @return true values of CEP curve
 #'
 #' @examples 
 #' example(true_cep(dat0 = dat0, dat1 = dat1, write = T, params_list = params_list, plotwrite = T))

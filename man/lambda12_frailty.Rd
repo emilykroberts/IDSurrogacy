@@ -2,18 +2,24 @@
 % Please edit documentation in R/lambda12_frailty.R
 \name{lambda12_frailty}
 \alias{lambda12_frailty}
-\title{likelihood function}
+\title{hazard function}
 \usage{
 lambda12_frailty(x, xdata1, omega1, scale12, shape12, c12, beta12_1)
 }
 \arguments{
-\item{weibull}{model parameters}
+\item{x:}{value at which to evaluate cumulative hazard
+xdata1: covariate data
+omega1: frailty term
+shape12: shape of Weibull distribution
+scale12: scale of Weibull distribution
+c12: frailty coefficient
+beta12_1: covariate coefficient}
 }
 \value{
-likelihood
+cumulative hazard
 }
 \description{
-evaluate likelihood ...
+evaluate hazard for the 1-2 transition
 }
 \examples{
 example(lambda12_frailty(x = 1, xdata1 = 0, omega1 = 1, shape12 = 1, scale12 = 1, c12 = 1, beta12_1 = 0))

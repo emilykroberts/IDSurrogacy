@@ -1,8 +1,14 @@
 #' likelihood function
 #'
-#' @description evaluate likelihood ...
+#' @description evaluate likelihood of shape parameter
 #'
-#' @param weibull model parameters
+#' @param 
+#' omega13_z0: frailty term
+#' shape23_0: shape of Weibull distribution
+#' scale23_0: scale of Weibull distribution
+#' c23_0: frailty coefficient
+#' theta23_0: covariate coefficient
+#' dat0: data
 #'
 #' @return likelihood
 #'

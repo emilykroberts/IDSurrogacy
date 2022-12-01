@@ -7,7 +7,8 @@
 final_results(params_matrix, write)
 }
 \arguments{
-\item{results}{}
+\item{params_matrix:}{parameter matrix of results
+write: logical value if results should be written to a file}
 }
 \value{
 table

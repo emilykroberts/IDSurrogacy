@@ -7,7 +7,8 @@
 plot_results(params_matrix, write)
 }
 \arguments{
-\item{results}{from mcmc}
+\item{params_matrix:}{matrix of parameters from mcmc
+write: logical value if results should be written to a file}
 }
 \value{
 cep curve

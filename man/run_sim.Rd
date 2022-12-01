@@ -7,7 +7,10 @@
 run_sim(SIM, rhos, rhot, frailtysd, params_list)
 }
 \arguments{
-\item{data, }{parameters, simulation information}
+\item{SIM:}{number of iterations of mcmc to run
+rhos: correlation parameter
+rhot: correlation parameter
+params_list: list of true generating parameters}
 }
 \value{
 simulation results

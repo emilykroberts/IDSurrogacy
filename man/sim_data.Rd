@@ -17,7 +17,15 @@ sim_data(
 )
 }
 \arguments{
-\item{generating}{parameters}
+\item{n:}{sample size
+array_id: ID of simulation (used for running in parallel)
+scenario: data setting for which treatment effects exist between transitions
+effecttheta: logical if theta23 should be zero
+rhos: correlation term
+rhot: correlation term
+rhost: correlation term
+frailtysd: standard deviation of generated frailties
+diffscale1323: logical value if baseline hazards for 1-3 and 2-3 should be equal}
 }
 \value{
 datasets: dat0, dat1 and true frailties for use in other functions

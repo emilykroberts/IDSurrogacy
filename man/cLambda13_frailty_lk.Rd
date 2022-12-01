@@ -2,18 +2,24 @@
 % Please edit documentation in R/cLambda13_frailty_lk.R
 \name{cLambda13_frailty_lk}
 \alias{cLambda13_frailty_lk}
-\title{likelihood function}
+\title{cumulative hazard function}
 \usage{
 cLambda13_frailty_lk(x, xdata1, omega2, scale13, shape13, c13, beta13_1)
 }
 \arguments{
-\item{weibull}{model parameters}
+\item{x:}{value at which to evaluate cumulative hazard
+xdata1: covariate data
+omega2: frailty term
+shape13: shape of Weibull distribution
+scale13: scale of Weibull distribution
+c13: frailty coefficient
+beta13_1: covariate coefficient}
 }
 \value{
-likelihood
+cumulative hazard
 }
 \description{
-evaluate likelihood ...
+evaluate cumulative hazard for the 1-3 transition
 }
 \examples{
 example(cLambda13_frailty_lk(x = 1, xdata1 = 0, omega2 = 1, shape13 = 1, scale13 = 1, c13 = 1, beta13_1 = 0))

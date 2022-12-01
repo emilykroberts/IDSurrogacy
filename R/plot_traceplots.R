@@ -2,7 +2,9 @@
 #'
 #' @description creates traceplots
 #'
-#' @param simulation results
+#' @param 
+#' params_matrix: matrix of parameters from mcmc
+#' variable: variable of which to plot
 #'
 #' @return traceplots
 #'

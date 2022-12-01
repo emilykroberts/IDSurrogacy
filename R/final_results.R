@@ -2,7 +2,9 @@
 #'
 #' @description tabulate results from mcmc 
 #'
-#' @param results
+#' @param
+#' params_matrix: parameter matrix of results
+#' write: logical value if results should be written to a file
 #'
 #' @return table
 #'

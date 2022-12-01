@@ -7,7 +7,13 @@
 like23_theta(theta23_0, dat0, c23_0, shape23_0, scale23_0, omega13_z0)
 }
 \arguments{
-\item{weibull}{model parameters}
+\item{weibull}{model parameters
+omega13_z0: frailty term
+shape23_0: shape of Weibull distribution
+scale23_0: scale of Weibull distribution
+c23_0: frailty coefficient
+theta23_0: covariate coefficient
+dat0: data}
 }
 \value{
 likelihood
