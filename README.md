@@ -2,6 +2,13 @@
 
 This R code provides functions to produce simulation studies as described and shown in Surrogacy Validation for Time-to-Event Outcomes with Illness-Death Frailty Models.
 
+This package can be installed using the following R code:
+
+devtools::install_github("emilykroberts/IDsurrogacy", build = TRUE, build_opts = c()) 
+library(IDsurrogacy) 
+utils::browseVignettes('IDsurrogacy')
+
+
 ### Resources
 
 * [Ask a question/Open an issue: coming soon](https://github.com/emilykroberts) (GitHub issues for bug reports, feature requests)
