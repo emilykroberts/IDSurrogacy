@@ -1,5 +1,5 @@
 library(truncnorm); library(latex2exp); library(cowplot); library(xtable)
-library(ggplot2); library(survival); library(survminer); library(frailtyEM); library(frailtypack)
+library(ggplot2); library(survival); library(survminer); library(frailtyEM); library(frailtypack); library(mvtnorm)
 library(here)
 
 setwd("./R")

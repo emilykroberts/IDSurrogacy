@@ -8,7 +8,7 @@ Maintainer: Emily Roberts <emily-roberts-1@uiowa.edu>
 Description: Desribe details of package with lit references.
 License: GPL (>= 2)
 Depends: R (>= 3.5.0)
-Imports: ggplot2, survival, survminer, frailtyEM, frailtypack, truncnorm, latex2exp, cowplot, xtable, here
+Imports: ggplot2, survival, survminer, frailtyEM, frailtypack, truncnorm, latex2exp, cowplot, xtable, here, mvtnorm
 RoxygenNote: 7.2.1
 Encoding: UTF-8
 URL: https://github.com/emilykroberts/Illness-Death-Surrogacy
