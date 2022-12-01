@@ -16,7 +16,7 @@ First, data in the illness death format for a randomized trial can be generated 
 
 The following files contain the likelihood components or calculations for different parameters in the proposed models:
 
-cLambda12_frailty_lk.R, cLambda13_frailty_lk.R, cLambda23_frailty_lk.R,  lambda12_frailty.R, like12_omega_i .R, like12_omega1_i.R, like12_shape.R, like12_shape1.R, like13_omega_i.R, like13_omega1_i.R, like13_shape.R, like13_shape1.R, like23_shape.R, like23_shape1.R, like23_theta.R, like23_theta1.R
+cLambda12_frailty_lk.R, cLambda13_frailty_lk.R, cLambda23_frailty_lk.R, lambda12_frailty.R, like12_omega_i .R, like12_omega1_i.R, like12_shape.R, like12_shape1.R, like13_omega_i.R, like13_omega1_i.R, like13_shape.R, like13_shape1.R, like23_shape.R, like23_shape1.R, like23_theta.R, like23_theta1.R
 
 based on the parameter (shape of the Weibull, frailties, or cumulative hazard). 
 
