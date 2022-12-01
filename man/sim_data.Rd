@@ -26,18 +26,8 @@ datasets: dat0, dat1 and true frailties for use in other functions
 simulate data
 }
 \examples{
-create data
-array_id = 1
-n = 600
-rhost = rhos = .5; rhot = .5
-SIM = 5000
-equalfrail = T
-independent = T
-diffscale1323 = T
+equalfrail = TRUE
+independent = TRUE
 frailtysd = 0.5
-scenario = 2
-effecttheta = F
-set.seed(1 + array_id)
-dat = sim_data(n = n, array_id = array_id, scenario = scenario, effecttheta = effecttheta,
-        rhos = rhos, rhot = rhot, rhost = rhost, frailtysd = frailtysd, diffscale1323 = T)
+example(sim_data(n = 600, array_id = 1, scenario = 2, effecttheta = FALSE, rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, diffscale1323 = TRUE))
 }

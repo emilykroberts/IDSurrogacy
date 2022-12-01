@@ -26,6 +26,5 @@ likelihood
 evaluate likelihood ...
 }
 \examples{
-likelihood for given parameter set
-
+example(cLambda123_frailty_lk(x = 1, xdata1 = 0, omega2 = 1, shape23 = 1, scale23 = 1, c23 = 1, beta23_1 = 0))
 }

@@ -4,7 +4,7 @@
 \alias{like12_omega_i}
 \title{likelihood function}
 \usage{
-like12_omega_i(omega12_z0, i, scale12_0, z, dat0, shape12_0, c12_0)
+like12_omega_i(omega12_z0, i, scale12_0, dat0, shape12_0, c12_0)
 }
 \arguments{
 \item{weibull}{model parameters}
@@ -16,6 +16,5 @@ likelihood
 evaluate likelihood ...
 }
 \examples{
-likelihood for given parameter set
-
+example(like12_omega1_i(omega12_z0 = 1, i = 1, scale12_0 = 1, dat0 = dat0, shape12_0 = 1, c12_0 = 1))
 }

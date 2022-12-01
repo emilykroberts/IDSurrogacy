@@ -16,6 +16,5 @@ cep values
 create cep true based on true values
 }
 \examples{
-example cep
-
+example(true_cep(dat0 = dat0, dat1 = dat1, write = T, params_list = params_list, plotwrite = T))
 }

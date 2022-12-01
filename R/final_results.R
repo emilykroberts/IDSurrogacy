@@ -6,8 +6,8 @@
 #'
 #' @return table
 #'
-#' @examples example results table
-#' 
+#' @examples 
+#' example(final_results(params_matrix = params_matrix, write = T))
 final_results = function(params_matrix, write){
  ## save results
  param = params_matrix$params

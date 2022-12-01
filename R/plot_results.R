@@ -6,8 +6,8 @@
 #'
 #' @return cep curve
 #'
-#' @examples example cep from simulations
-#' 
+#' @examples 
+#' example(plot_results(params_matrix = params_matrix, write = F))
 plot_results = function(params_matrix, write){
  
  param = params_matrix$params

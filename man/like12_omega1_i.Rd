@@ -16,6 +16,5 @@ likelihood
 evaluate likelihood ...
 }
 \examples{
-likelihood for given parameter set
-
+example(like12_omega1_i(omega12_z1 = 1, i = 1, scale12_1 = 1, dat1 = dat1, shape12_1 = 1, c12_1 = 1))
 }

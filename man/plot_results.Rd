@@ -16,6 +16,5 @@ cep curve
 plot the results in a cep curve
 }
 \examples{
-example cep from simulations
-
+example(plot_results(params_matrix = params_matrix, write = F))
 }

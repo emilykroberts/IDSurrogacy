@@ -6,8 +6,8 @@
 #'
 #' @return traceplots
 #'
-#' @examples example traceplots
-#' 
+#' @examples
+#' example(plot_traceplots(params_matrix = params_matrix, variable = "int"))
 plot_traceplots = function(params_matrix, variable){
  param = params_matrix$params
  

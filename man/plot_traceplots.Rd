@@ -16,6 +16,5 @@ traceplots
 creates traceplots
 }
 \examples{
-example traceplots
-
+example(plot_traceplots(params_matrix = params_matrix, variable = "int"))
 }

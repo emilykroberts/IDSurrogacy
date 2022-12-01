@@ -6,8 +6,8 @@
 #'
 #' @return simulation results
 #'
-#' @examples show how simulation works
-#' 
+#' @examples 
+#' example(run_sim(SIM = 3000, rhos = 0.5, rhot = 0.5, frailtysd = 1, params_list = params_list))
 
 run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   

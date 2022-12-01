@@ -6,8 +6,8 @@
 #'
 #' @return cep values
 #'
-#' @examples example cep
-#' 
+#' @examples 
+#' example(true_cep(dat0 = dat0, dat1 = dat1, write = T, params_list = params_list, plotwrite = T))
 true_cep = function(dat0, dat1, write, params_list, plotwrite){
   
  params_list = attach(params_list)

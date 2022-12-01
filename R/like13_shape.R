@@ -6,8 +6,8 @@
 #'
 #' @return likelihood
 #'
-#' @examples likelihood for given parameter set
-#' 
+#' @examples 
+#' example(like13_shape(shape13_0 = 1, dat0 = 1, c13_0 = 1, scale13_0 = 1, omega13_z0 = 1))
 like13_shape = function(shape13_0, dat0, c13_0, scale13_0, omega13_z0){
 
 b = (((1/shape13_0) - 1) * (sum(log(dat0$y13 ^ dat0$s13), na.rm = T)) - 

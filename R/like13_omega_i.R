@@ -6,8 +6,8 @@
 #'
 #' @return likelihood
 #'
-#' @examples likelihood for given parameter set
-#' 
+#' @examples 
+#' example(like13_omega_i(omega13_z0 = 1, i = 1, scale13_0 = 1, dat1 = dat1, shape13_0 = 1, c13_0 = 1, scale23_0 = 1, shape23_0 = 1, c23_0 = 1, theta23_0 = 0))
 like13_omega_i = function(omega13_z0, i, scale13_0, dat0, shape13_0, c13_0, 
  scale23_0, shape23_0, c23_0, theta23_0){
 

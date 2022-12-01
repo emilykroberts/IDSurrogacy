@@ -16,6 +16,5 @@ table
 tabulate results from mcmc
 }
 \examples{
-example results table
-
+example(final_results(params_matrix = params_matrix, write = T))
 }

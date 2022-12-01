@@ -16,6 +16,5 @@ simulation results
 run mcmc simulation
 }
 \examples{
-show how simulation works
-
+example(run_sim(SIM = 3000, rhos = 0.5, rhot = 0.5, frailtysd = 1, params_list = params_list))
 }
