@@ -2,9 +2,8 @@
 #'
 #' @description plot the results in a cep curve
 #'
-#' @param 
-#' params_matrix: matrix of parameters from mcmc
-#' write: logical value if results should be written to a file
+#' @param params_matrix matrix of parameters from mcmc
+#' @param write logical value if results should be written to a file
 #' 
 #' @return cep curve
 #'

@@ -2,16 +2,17 @@
 #'
 #' @description run mcmc simulation
 #'
-#' @param 
-#' SIM: number of iterations of mcmc to run
-#' rhos: correlation parameter
-#' rhot: correlation parameter
-#' params_list: list of true generating parameters
+#' @param SIM number of iterations of mcmc to run
+#' @param rhos correlation parameter
+#' @param rhot correlation parameter
+#' @param params_list list of true generating parameters
+#' @param frailtysd standard deviation of frailty term
 #'
 #' @return simulation results
 #'
 #' @examples 
-#' example(run_sim(SIM = 3000, rhos = 0.5, rhot = 0.5, frailtysd = 1, params_list = params_list))
+#' example(run_sim(SIM = 3000, rhos = 0.5, rhot = 0.5, 
+#' frailtysd = 1, params_list = params_list))
 
 run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   
@@ -67,48 +68,48 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
 # estimate starting values for frailty terms
   if(T){
     dat1penal = data.frame(time = c(dat1$y12),  status = c(dat1$s12),
-                           id = rep(1 : (n/2), 1), death = c(dat1$s13))
+                           id = rep(1  (n/2), 1), death = c(dat1$s13))
     dat1penal = dat1penal[complete.cases(dat1penal),]
 
     penalfrail1 = frailtyPenal(Surv(time, status)~ cluster(id) + terminal(death),
                            jointGeneral = TRUE, data=dat1penal, n.knots = 4, kappa = c(1))
     
-    omega12_z1 = o12save1[1 : (n/2)] = log(penalfrail1$frailty.pred)
+    omega12_z1 = o12save1[1  (n/2)] = log(penalfrail1$frailty.pred)
 
     dat1penal = data.frame(time = c(dat1$y23, dat1$y13),  status = c(dat1$s23, dat1$s13), y12 = c(dat1$y12, rep(0, n/2)), 
-                           id = rep(1 : (n/2), 2), death = c(rep(0, n/2)), dat1$s13)
+                           id = rep(1  (n/2), 2), death = c(rep(0, n/2)), dat1$s13)
     dat1penal = dat1penal[complete.cases(dat1penal),]
 
 
     dat1penal = data.frame(time = c(dat1$y23, dat1$y13),  status = c(dat1$s23, dat0$s13), y12 = c(dat1$y12, rep(1, n/2)), 
-                           id = rep(1 : (n/2), 2))
+                           id = rep(1  (n/2), 2))
     dat1penal = dat1penal[complete.cases(dat1penal),]
     
     penalfrail1 = frailtyPenal(Surv(time, status)~cluster(id) + y12 ,
                                data=dat1penal, hazard = "Weibull",
                                RandDist = "LogN")
     
-    omega23_z1 = o23save1[1 : (n/2)] = omega13_z1 = o13save1[1 : (n/2)] = (penalfrail1$frailty.pred)
+    omega23_z1 = o23save1[1  (n/2)] = omega13_z1 = o13save1[1  (n/2)] = (penalfrail1$frailty.pred)
 
     dat0penal = data.frame(time = c(dat0$y12),  status = c(dat0$s12),
-                           id = rep(1 : (n/2), 1), death = c(dat0$s13))
+                           id = rep(1  (n/2), 1), death = c(dat0$s13))
 
     dat0penal = dat0penal[complete.cases(dat0penal),]
     
     penalfrail0 = frailtyPenal(Surv(time, status)~ cluster(id) + terminal(death),
                                jointGeneral = TRUE, data=dat0penal, n.knots = 4, kappa = c(1))
     
-    omega12_z0 = o12save0[1 : (n/2)] = log(penalfrail0$frailty.pred)
+    omega12_z0 = o12save0[1  (n/2)] = log(penalfrail0$frailty.pred)
       
     dat0penal = data.frame(time = c(dat0$y23, dat0$y13),  status = c(dat0$s23, dat0$s13), y12 = c(dat0$y12, rep(0, n/2)), 
-                           id = rep(1 : (n/2), 2))
+                           id = rep(1  (n/2), 2))
     dat0penal = dat0penal[complete.cases(dat0penal),]
 
     penalfrail0 = frailtyPenal(Surv(time, status)~cluster(id) + y12 ,
                                data=dat0penal, hazard = "Weibull",
                                RandDist = "LogN")
     
-    omega23_z0 = o23save0[1 : (n/2)] = omega13_z0 = o13save0[1 : (n/2)] = (penalfrail0$frailty.pred)
+    omega23_z0 = o23save0[1  (n/2)] = omega13_z0 = o13save0[1  (n/2)] = (penalfrail0$frailty.pred)
     
       }
   
@@ -151,22 +152,22 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
 
   zseed = round(runif(1, 1, 100)) ;  set.seed(zseed + z + array_id)
   
-  omega12_star = rnorm(n/2, o12save0[1 : (n/2)], sd = proposalsdfrail)
-  omega13_star = rnorm(n/2, o13save0[1 : (n/2)], sd = proposalsdfrail)
+  omega12_star = rnorm(n/2, o12save0[1  (n/2)], sd = proposalsdfrail)
+  omega13_star = rnorm(n/2, o13save0[1  (n/2)], sd = proposalsdfrail)
 
    if(z == 2){
-     omega12_star = rnorm(n/2, o12save0[1 : (n/2)], sd = frailtysd)
-     omega13_star = rnorm(n/2, o13save0[1 : (n/2)], sd = frailtysd)
+     omega12_star = rnorm(n/2, o12save0[1  (n/2)], sd = frailtysd)
+     omega13_star = rnorm(n/2, o13save0[1  (n/2)], sd = frailtysd)
    }
   
-  omega12_z0 = o12save0[1 : (n/2)]
-  omega13_z0 = o13save0[1 : (n/2)]
-  omega23_z0 = o23save0[1 : (n/2)]
+  omega12_z0 = o12save0[1  (n/2)]
+  omega13_z0 = o13save0[1  (n/2)]
+  omega23_z0 = o23save0[1  (n/2)]
   
   save = savestar = NULL
   sap = sap2 = z1 = p = rep(NA, n/2)
   
-  for(i in 1 : (n/2)){
+  for(i in 1:  (n/2)){
     
     sap[i] = like12_omega_i(omega12_star[i], i = i, scale12_0 = holdscale12_0[z - 1],
                               dat0 = dat0, shape12_0 = holdshape12_0[z - 1], c12_0 = holdc12_0[z - 1])
@@ -191,7 +192,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   
   o12save0 = c(omega_star, omega_cf)
   
-  holdomega12_0[,z] = omega12_z0[1 :10]
+  holdomega12_0[,z] = omega12_z0[1 : 10]
   if(holdc) c12_0_star = 1
   beta12_0_star = rnorm(1, holdbeta12_0[z - 1], sd = proposalsd)
   shape12_0_star = rtruncnorm(n = 1, a = 0, b = 3, mean = holdshape12_0[z - 1], sd = proposalsd)
@@ -241,7 +242,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   z1 = p = rep(NA, (n/2))
   sap = sap2 = rep(NA, (n/2))
   
-  for(i in 1 : (n/2)){
+  for(i in 1:  (n/2)){
     sap[i] =   like13_omega_i(omega13_z0 = omega13_star[i], i = i, 
                               dat0 = dat0, c13_0 = holdc13_0[z - 1],
                               shape13_0 = holdshape13_0[z - 1], scale13_0 = holdscale13_0[z - 1], c23_0 = holdc23_0[z - 1],
@@ -271,7 +272,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
 
   omega23_z0 = omega23_star = omega13_z0
   
-  holdomega23_0[,z] = omega23_z0[1 :10]
+  holdomega23_0[,z] = omega23_z0[1 : 10]
   holdfrailsd23_0[z] = sd(omega23_star)
   holdfrailmean23_0[z] = mean(omega23_star)
 
@@ -366,7 +367,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   if(z1 == 1) accept4 = accept4 + 1
   if(z15 == 1) accept5 = accept5 + 1
 
-  holdomega13_0[,z] = omega13_z0[1 :10]
+  holdomega13_0[,z] = omega13_z0[1 : 10]
   
   scale13_0 = z1 * scale13_0_star + (1-z1) *  holdscale13_0[z - 1]
   c13_0 = z1 * c13_0_star + (1-z1) *  holdc13_0[z - 1]
@@ -390,22 +391,22 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   holdshape23_0[z] = shape23_0
   holdtheta23_0[z] = theta23_0
 
-  omega12_star = rnorm(n/2, o12save1[1 : (n/2)], sd = proposalsdfrail)
-  omega13_star = rnorm(n/2, o13save1[1 : (n/2)], sd = proposalsdfrail)
+  omega12_star = rnorm(n/2, o12save1[1  (n/2)], sd = proposalsdfrail)
+  omega13_star = rnorm(n/2, o13save1[1  (n/2)], sd = proposalsdfrail)
 
    if(z == 2){
-     omega12_star = rnorm(n/2, o12save1[1 : (n/2)], sd = frailtysd)
-     omega13_star = rnorm(n/2, o13save1[1 : (n/2)], sd = frailtysd)
+     omega12_star = rnorm(n/2, o12save1[1  (n/2)], sd = frailtysd)
+     omega13_star = rnorm(n/2, o13save1[1  (n/2)], sd = frailtysd)
    }
    
-  omega12_z1 = o12save1[1 : (n/2)]
-  omega13_z1 = o13save1[1 : (n/2)]
-  omega23_z1 = o23save1[1 : (n/2)]
+  omega12_z1 = o12save1[1  (n/2)]
+  omega13_z1 = o13save1[1  (n/2)]
+  omega23_z1 = o23save1[1  (n/2)]
 
   save = savestar = NULL
   z1 = p = rep(NA, n/2)
 
-  for(i in 1 : (n/2)){
+  for(i in 1:  (n/2)){
   
   sap[i] = like12_omega1_i(omega12_star[i], i = i, scale12_1 = holdscale12_1[z - 1], dat1 = dat1, shape12_1 = holdshape12_1[z - 1],
                              c12_1 = holdc12_1[z - 1])[1]
@@ -430,7 +431,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   
   o12save1 = c(omega_star, omega_cf)
   
-  holdomega12_1[,z] = omega12_z1[1 :10]
+  holdomega12_1[,z] = omega12_z1[1 : 10]
   if(holdc) c12_1_star = 1
   beta12_1_star = rnorm(1, holdbeta12_1[z - 1], sd = proposalsd)
   shape12_1_star = rtruncnorm(n = 1, a = 0, b = 3, mean = holdshape12_1[z - 1], sd = proposalsd)
@@ -481,7 +482,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   z1 = p = rep(NA, (n/2))
   sap = sap2 = rep(NA, (n/2))
   
-  for(i in 1 : (n/2)){
+  for(i in 1:  (n/2)){
     sap[i] =   like13_omega1_i(omega13_star[i], i = i, scale13_1 = holdscale13_1[z - 1], dat1 = dat1, shape13_1 = holdshape13_1[z - 1],
                                c13_1 = holdc13_1[z - 1], shape23_1 = holdshape23_1[z - 1], scale23_1 = holdscale23_1[z - 1], theta23_1 = holdtheta23_1[z - 1],
                                c23_1 = holdc23_1[z - 1])[1]
@@ -513,13 +514,13 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
  
    o23save1 = o13save1
    
-   holdomega23_0[,z] = omega23_z1[1 :10]
+   holdomega23_0[,z] = omega23_z1[1 : 10]
    holdfrailsd23_1[z] = sd(omega23_star)
    holdfrailmean23_1[z] = mean(omega23_star)
    
-   holdomega23_1[,z] = omega23_z1[1 :10]
+   holdomega23_1[,z] = omega23_z1[1 : 10]
    
-  holdomega13_1[,z] = omega13_z1[1 :10]
+  holdomega13_1[,z] = omega13_z1[1 : 10]
   c13_1_star = rnorm(1, holdc13_1[z - 1], sd = proposalsd)
 
   if(holdc) c13_1_star = 1
@@ -656,7 +657,7 @@ if(cep){
       shape23 = holdshape23_0[z],   c23 = holdc23_0[z], theta23 = holdtheta23_0[z], v_predict = t, beta23_1 = holdbeta23_0[z]
    ))
   }
-  for(i in 1 : n){
+  for(i in 1:  n){
     y =tryCatch({ integrate(f = intfunction, lower = 0, upper = tau_t, i = i, j = j)$val
     },
     error = function(error_condition) {
@@ -685,7 +686,7 @@ if(cep){
         shape23 = holdshape23_1[z], c23 = holdc23_1[z], theta23 = holdtheta23_1[z], v_predict = t, beta23_1 = holdbeta23_1[z]))
   }
   ## for z = 1
-  for(i in 1 : n){
+  for(i in 1:  n){
     y =tryCatch({ integrate(f = intfunction, lower = 0, upper = tau_t, i = i, j = j)$val
     },
     error = function(error_condition) {

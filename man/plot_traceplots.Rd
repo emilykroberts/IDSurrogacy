@@ -7,8 +7,9 @@
 plot_traceplots(params_matrix, variable)
 }
 \arguments{
-\item{params_matrix:}{matrix of parameters from mcmc
-variable: variable of which to plot}
+\item{params_matrix}{matrix of parameters from mcmc}
+
+\item{variable}{variable of which to plot}
 }
 \value{
 traceplots

@@ -18,16 +18,25 @@ like13_omega1_i(
 )
 }
 \arguments{
-\item{omega13_z1:}{frailty term
-i: index for individual in dataset
-dat1: dataset
-shape13_1: shape for Weibull distribution
-scale13_1: scale for Weibull distribution
-c13_1: frailty coefficient
-shape23_1: shape for Weibull distribution
-scale23_1: scale for Weibull distribution
-c23_1: frailty coefficient
-theta23_1: theta parameter for 2-3 transition}
+\item{omega13_z1}{frailty term}
+
+\item{i}{index for individual in dataset}
+
+\item{scale13_1}{scale for Weibull distribution}
+
+\item{dat1}{dataset}
+
+\item{shape13_1}{shape for Weibull distribution}
+
+\item{c13_1}{frailty coefficient}
+
+\item{scale23_1}{scale for Weibull distribution}
+
+\item{shape23_1}{shape for Weibull distribution}
+
+\item{c23_1}{frailty coefficient}
+
+\item{theta23_1}{theta parameter for 2-3 transition}
 }
 \value{
 likelihood
@@ -36,5 +45,7 @@ likelihood
 evaluate likelihood for frailty for 1-3 transition
 }
 \examples{
-example(like13_omega1_i(omega13_z1 = 1, i = 1, scale13_1 = 1, dat1 = dat1, shape13_1 = 1, c13_1 = 1, scale23_1 = 1, shape23_1 = 1, c23_1 = 1, theta23_1 = 0))
+example(like13_omega1_i(omega13_z1 = 1, i = 1, scale13_1 = 1, 
+ dat1 = dat1, shape13_1 = 1, c13_1 = 1, scale23_1 = 1, shape23_1 = 1, 
+c23_1 = 1, theta23_1 = 0))
 }

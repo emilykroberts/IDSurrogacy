@@ -2,18 +2,18 @@
 #'
 #' @description evaluate likelihood for frailty for 1-2 transition
 #'
-#' @param
-#' omega12_z0: frailty term
-#' i: index for individual in dataset
-#' dat0: dataset
-#' shape12_0: shape for Weibull distribution
-#' scale12_0: scale for Weibull distribution
-#' c12_0: frailty coefficient
+#' @param omega12_z0 frailty term
+#' @param i index for individual in dataset
+#' @param dat0 dataset
+#' @param shape12_0 shape for Weibull distribution
+#' @param scale12_0 scale for Weibull distribution
+#' @param c12_0 frailty coefficient
 #' 
 #' @return likelihood
 #'
 #' @examples 
-#' example(like12_omega1_i(omega12_z0 = 1, i = 1, scale12_0 = 1, dat0 = dat0, shape12_0 = 1, c12_0 = 1))
+#' example(like12_omega1_i(omega12_z0 = 1, i = 1, scale12_0 = 1, 
+#' dat0 = dat0, shape12_0 = 1, c12_0 = 1))
 like12_omega_i = function(omega12_z0, i, scale12_0, dat0, shape12_0, c12_0){
 
  e = ((1/shape12_0 - 1) * (sum(log(dat0$y12[i] ^ dat0$s12[i]), na.rm = T))- 

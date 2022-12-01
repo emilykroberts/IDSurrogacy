@@ -11,8 +11,8 @@ Depends: R (>= 3.5.0)
 Imports: ggplot2, survival, survminer, frailtyEM, frailtypack, truncnorm, latex2exp, cowplot, xtable, here, mvtnorm
 RoxygenNote: 7.2.1
 Encoding: UTF-8
-URL: https://github.com/emilykroberts/Illness-Death-Surrogacy
-BugReports: https://github.com/emilykroberts/Illness-Death-Surrogacy/issues
+URL: https://github.com/emilykroberts/IDSurrogacy
+BugReports: https://github.com/emilykroberts/IDSurrogacy/issues
 NeedsCompilation: no
 Packaged: 2022-12-01 03:49:08 UTC; emilyroberts
 Author: Emily Roberts [aut, cre]

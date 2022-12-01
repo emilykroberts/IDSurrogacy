@@ -17,18 +17,26 @@ sim_data(
 )
 }
 \arguments{
-\item{n:}{sample size
-array_id: ID of simulation (used for running in parallel)
-scenario: data setting for which treatment effects exist between transitions
-effecttheta: logical if theta23 should be zero
-rhos: correlation term
-rhot: correlation term
-rhost: correlation term
-frailtysd: standard deviation of generated frailties
-diffscale1323: logical value if baseline hazards for 1-3 and 2-3 should be equal}
+\item{n}{sample size}
+
+\item{array_id}{ID of simulation (used for running in parallel)}
+
+\item{scenario}{data setting for which treatment effects exist between transitions}
+
+\item{effecttheta}{logical if theta23 should be zero}
+
+\item{frailtysd}{standard deviation of generated frailties}
+
+\item{rhot}{correlation term}
+
+\item{rhos}{correlation term}
+
+\item{rhost}{correlation term}
+
+\item{diffscale1323}{logical value if baseline hazards for 1-3 and 2-3 should be equal}
 }
 \value{
-datasets: dat0, dat1 and true frailties for use in other functions
+datasets dat0, dat1 and true frailties for use in other functions
 }
 \description{
 simulate data
@@ -37,5 +45,7 @@ simulate data
 equalfrail = TRUE
 independent = TRUE
 frailtysd = 0.5
-example(sim_data(n = 600, array_id = 1, scenario = 2, effecttheta = FALSE, rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, diffscale1323 = TRUE))
+example(sim_data(n = 600, array_id = 1, scenario = 2, effecttheta = FALSE,
+rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+diffscale1323 = TRUE))
 }

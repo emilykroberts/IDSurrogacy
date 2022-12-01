@@ -7,11 +7,15 @@
 true_cep(dat0, dat1, write, params_list, plotwrite)
 }
 \arguments{
-\item{dat0:}{data for placebo arm
-dat1: data for treatment arm
-write: logical value if results should be written to a file
-params_list: true values of parameters
-plotwrite: logical value if plot should be saved to a file}
+\item{dat0}{data for placebo arm}
+
+\item{dat1}{data for treatment arm}
+
+\item{write}{logical value if results should be written to a file}
+
+\item{params_list}{true values of parameters}
+
+\item{plotwrite}{logical value if plot should be saved to a file}
 }
 \value{
 true values of CEP curve
@@ -20,5 +24,6 @@ true values of CEP curve
 create cep true based on true values
 }
 \examples{
-example(true_cep(dat0 = dat0, dat1 = dat1, write = T, params_list = params_list, plotwrite = T))
+example(true_cep(dat0 = dat0, dat1 = dat1, write = T, params_list = 
+params_list, plotwrite = T))
 }

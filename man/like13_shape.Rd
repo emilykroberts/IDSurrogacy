@@ -7,11 +7,15 @@
 like13_shape(shape13_0, dat0, c13_0, scale13_0, omega13_z0)
 }
 \arguments{
-\item{omega13_z0:}{frailty term
-shape13_0: shape of Weibull distribution
-scale13_0: scale of Weibull distribution
-c13_0: frailty coefficient
-dat0: data}
+\item{shape13_0}{shape of Weibull distribution}
+
+\item{dat0}{data}
+
+\item{c13_0}{frailty coefficient}
+
+\item{scale13_0}{scale of Weibull distribution}
+
+\item{omega13_z0}{frailty term}
 }
 \value{
 likelihood
@@ -20,5 +24,6 @@ likelihood
 evaluate likelihood ...
 }
 \examples{
-example(like13_shape(shape13_0 = 1, dat0 = 1, c13_0 = 1, scale13_0 = 1, omega13_z0 = 1))
+example(like13_shape(shape13_0 = 1, dat0 = 1, c13_0 = 1, 
+scale13_0 = 1, omega13_z0 = 1))
 }

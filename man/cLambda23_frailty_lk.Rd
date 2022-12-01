@@ -17,13 +17,23 @@ cLambda23_frailty_lk(
 )
 }
 \arguments{
-\item{x:}{value at which to evaluate cumulative hazard
-xdata1: covariate data
-omega2: frailty term
-shape23: shape of Weibull distribution
-scale23: scale of Weibull distribution
-c23: frailty coefficient
-beta23_1: covariate coefficient}
+\item{x}{value at which to evaluate cumulative hazard}
+
+\item{xdata1}{covariate data}
+
+\item{v_predict}{potential time that S occured to be integrated over}
+
+\item{omega2}{frailty term}
+
+\item{shape23}{shape of Weibull distribution}
+
+\item{scale23}{scale of Weibull distribution}
+
+\item{theta23}{theta23 parameter in 2-3 transition}
+
+\item{c23}{frailty coefficient}
+
+\item{beta23_1}{covariate coefficient}
 }
 \value{
 cumulative hazard
@@ -32,5 +42,6 @@ cumulative hazard
 evaluate cumulative hazard for the 2-3 transition
 }
 \examples{
-example(cLambda123_frailty_lk(x = 1, xdata1 = 0, omega2 = 1, shape23 = 1, scale23 = 1, c23 = 1, beta23_1 = 0))
+example(cLambda123_frailty_lk(x = 1, xdata1 = 0, omega2 = 1, 
+shape23 = 1, scale23 = 1, c23 = 1, beta23_1 = 0, theta23 = 0, v_predict = 1))
 }

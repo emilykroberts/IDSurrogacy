@@ -2,17 +2,17 @@
 #'
 #' @description evaluate likelihood ...
 #'
-#' @param weibull model parameters
-#' omega12_z0: frailty term
-#' shape12_0: shape of Weibull distribution
-#' scale12_0: scale of Weibull distribution
-#' c12_0: frailty coefficient
-#' dat0: data
+#' @param omega12_z0 frailty term
+#' @param shape12_0 shape of Weibull distribution
+#' @param scale12_0 scale of Weibull distribution
+#' @param c12_0 frailty coefficient
+#' @param dat0 data
 #'
 #' @return likelihood
 #'
 #' @examples 
-#' example(like12_shape(shape12_0 = 1, scale12_0 = 1, dat0 = 1, c12_0 = 1, omega12_z0 = 1))
+#' example(like12_shape(shape12_0 = 1, scale12_0 = 1, dat0 = 1, 
+#' c12_0 = 1, omega12_z0 = 1))
 like12_shape = function(shape12_0, scale12_0, dat0, c12_0, omega12_z0){
 
 b = ((1/shape12_0 - 1) * (sum(log(dat0$y12 ^ dat0$s12), na.rm = T))- 

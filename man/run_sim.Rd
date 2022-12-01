@@ -7,10 +7,15 @@
 run_sim(SIM, rhos, rhot, frailtysd, params_list)
 }
 \arguments{
-\item{SIM:}{number of iterations of mcmc to run
-rhos: correlation parameter
-rhot: correlation parameter
-params_list: list of true generating parameters}
+\item{SIM}{number of iterations of mcmc to run}
+
+\item{rhos}{correlation parameter}
+
+\item{rhot}{correlation parameter}
+
+\item{frailtysd}{standard deviation of frailty term}
+
+\item{params_list}{list of true generating parameters}
 }
 \value{
 simulation results
@@ -19,5 +24,6 @@ simulation results
 run mcmc simulation
 }
 \examples{
-example(run_sim(SIM = 3000, rhos = 0.5, rhot = 0.5, frailtysd = 1, params_list = params_list))
+example(run_sim(SIM = 3000, rhos = 0.5, rhot = 0.5, 
+frailtysd = 1, params_list = params_list))
 }

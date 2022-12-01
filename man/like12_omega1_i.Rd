@@ -7,12 +7,17 @@
 like12_omega1_i(omega12_z1, i, scale12_1, dat1, shape12_1, c12_1)
 }
 \arguments{
-\item{omega12_z1:}{frailty term
-i: index for individual in dataset
-dat1: dataset
-shape12_1: shape for Weibull distribution
-scale12_1: scale for Weibull distribution
-c12_1: frailty coefficient}
+\item{omega12_z1}{frailty term}
+
+\item{i}{index for individual in dataset}
+
+\item{scale12_1}{scale for Weibull distribution}
+
+\item{dat1}{dataset}
+
+\item{shape12_1}{shape for Weibull distribution}
+
+\item{c12_1}{frailty coefficient}
 }
 \value{
 likelihood
@@ -21,5 +26,6 @@ likelihood
 evaluate likelihood for frailty for 1-2 transition
 }
 \examples{
-example(like12_omega1_i(omega12_z1 = 1, i = 1, scale12_1 = 1, dat1 = dat1, shape12_1 = 1, c12_1 = 1))
+example(like12_omega1_i(omega12_z1 = 1, i = 1, scale12_1 = 1, 
+dat1 = dat1, shape12_1 = 1, c12_1 = 1))
 }
