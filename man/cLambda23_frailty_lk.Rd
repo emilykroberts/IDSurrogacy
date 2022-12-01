@@ -11,7 +11,6 @@ cLambda23_frailty_lk(
   omega2,
   shape23,
   scale23,
-  omega1,
   theta23,
   c23,
   beta23_1
