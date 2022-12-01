@@ -4,9 +4,9 @@ This R code provides functions to produce simulation studies as described and sh
 
 This package can be installed using the following R code:
 
-devtools::install_github("emilykroberts/IDsurrogacy", build = TRUE, build_opts = c()) 
-library(IDsurrogacy) 
-utils::browseVignettes('IDsurrogacy')
+devtools::install_github("emilykroberts/IDSurrogacy", build = TRUE, build_opts = c()) 
+
+library(IDSurrogacy) 
 
 
 ### Resources
