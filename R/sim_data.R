@@ -25,7 +25,7 @@
 sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, rhost, diffscale1323){
 	
 	independent = FALSE
-	equalfrail = F
+	equalfrail = T
   
   {
     if(scenario == 1){ effect12 = F; effect13 = F ; effect23 = F}
