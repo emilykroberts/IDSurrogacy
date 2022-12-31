@@ -97,27 +97,22 @@ sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, r
   eigen(R)
   
   S = diag(c(frailtysd, frailtysd, frailtysd, frailtysd, frailtysd, frailtysd))
-  o = mvtnormrmvnorm(n, c(0,0,0,0,0,0), S%*%R%*%S)
+  o = mvtnorm::rmvnorm(n, c(0,0,0,0,0,0), S%*%R%*%S)
   omega12true0 = o[,1]; omega12true1 = o[,2]
   
   omega13true0 = o[,3]
   omega23true0 = o[,5] 
   omega13true1 = o[,4]
   omega23true1 = o[,6]
-  
-  o = mvtnormrmvnorm(n, c(0,0,0,0,0,0), S%*%R%*%S)
-  
+    
   if(equalfrail){omega23true0 = omega13true0 ; omega23true1 = omega13true1}
   #omega13true0 = omega23true0 = omega12true0; omega13true1 = omega23true1 = omega12true1
   
   U1 = runif(n); U2 = runif(n); U3 = runif(n)
   U4 = runif(n); U5 = runif(n); U6 = runif(n)
   
-  # U1 = U1/2
-  # U2 = U2/2
-  # U3 = U3/2
   xtrue = x = rbinom(n, 1, 0.5)
-  x_0 = x[1(n/2)]; x_1 = x[1(n/2)]
+  x_0 = x[1:(n/2)]; x_1 = x[1:(n/2)]
   
   # columns S12, S23, S13 # 1 -> S, S -> T, 1 -> T
   ST = status = ST_raw = cbind(
@@ -127,25 +122,19 @@ sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, r
     (1/scale12_1*(-log(1-U4))/exp((c12_1*omega12true1 + beta12_1 * x)))^shape12_1,
     (1/scale23_1*(-log(1-U5))/exp((c23_1*omega23true1 + beta23_1 * x)))^shape23_1,
     (1/scale13_1*(-log(1-U6))/exp((c13_1*omega13true1 + beta13_1 * x)))^shape13_1
-  ); status[,16] = 1
+  ); status[,1:6] = 1
   
   
   ST[,2] =   (1/scale23_0*(-log(1-U2))/exp((c23_0*omega23true0 + theta23_0 * ST[,1])))^shape23_0
   ST[,5] =   (1/scale23_1*(-log(1-U5))/exp((c23_1*omega23true1 + theta23_1 *  ST[,4])))^shape23_1
   
-  rgamma(1, shape = 0.01 + sum(ST[,2], na.rm = T),
-         scale = (0.01 + 1/1 * sum(status[,2]^ 1 * exp(1 * omega23true0), na.rm = T))^(-1))
-  
-  
-  rgamma(1, shape = 0.01 + sum(ST[,2], na.rm = T),
-         scale = (0.01 + 1/1 * sum(status[,2]^ 1 * exp(0), na.rm = T))^(-1))
-  
+
   
   if(T){
     ST[is.infinite(ST)] = NA
   
-  status[ST[,3] < ST[,1], 12] = 0
-  status[ST[,6] < ST[,4], 45] = 0 
+  status[ST[,3] < ST[,1], 1:2] = 0
+  status[ST[,6] < ST[,4], 4:5] = 0 
 
   ST[ST[,3] < ST[,1], 1] =  ST[ST[,3] < ST[,1], 3]
   ST[ST[,6] < ST[,4], 4] = ST[ST[,6] < ST[,4], 6]
@@ -168,23 +157,23 @@ sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, r
   }
   trt = c(rep(0, n), rep(1, n))
   
-  dat0 = data.frame(y12 = c(ST[1(n/2),1]), s12 = c(status[1(n/2),1]),
-                    y13 = c(ST[1(n/2),3]), s13 = c(status[1(n/2),3]),
-                    y23 = c(ST[1(n/2),2]), s23 = c(status[1(n/2),2])
+  dat0 = data.frame(y12 = c(ST[1:(n/2),1]), s12 = c(status[1:(n/2),1]),
+                    y13 = c(ST[1:(n/2),3]), s13 = c(status[1:(n/2),3]),
+                    y23 = c(ST[1:(n/2),2]), s23 = c(status[1:(n/2),2])
   )
   
-  dat1 = data.frame(y12 = c(ST[1(n/2),4]), s12 = c(status[1(n/2),4]),
-                    y13 = c(ST[1(n/2),6]), s13 = c(status[1(n/2),6]),
-                    y23 = c(ST[1(n/2),5]), s23 = c(status[1(n/2),5])
+  dat1 = data.frame(y12 = c(ST[1:(n/2),4]), s12 = c(status[1:(n/2),4]),
+                    y13 = c(ST[1:(n/2),6]), s13 = c(status[1:(n/2),6]),
+                    y23 = c(ST[1:(n/2),5]), s23 = c(status[1:(n/2),5])
   )
   
-  o12save0 = omega12_z0 = omega12true0[1(n/2)]
-  o13save0 = omega13_z0 = omega13true0[1(n/2)]
-  o23save0 = omega23_z0 = omega23true0[1(n/2)]
+  o12save0 = omega12_z0 = omega12true0[1:(n/2)]
+  o13save0 = omega13_z0 = omega13true0[1:(n/2)]
+  o23save0 = omega23_z0 = omega23true0[1:(n/2)]
   
-  o12save1 = omega12_z1 = omega12true1[1(n/2)]
-  o13save1 = omega13_z1 = omega13true1[1(n/2)]
-  o23save1 = omega23_z1 = omega23true1[1(n/2)]
+  o12save1 = omega12_z1 = omega12true1[1:(n/2)]
+  o13save1 = omega13_z1 = omega13true1[1:(n/2)]
+  o23save1 = omega23_z1 = omega23true1[1:(n/2)]
   
   params_list = data.frame(scale12_0 = scale12_0, scale13_0 = scale13_0, scale23_0 = scale23_0,
                            scale12_1 = scale12_1, scale13_1 = scale13_1, scale23_1 = scale23_1,
