@@ -174,8 +174,8 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
     sap2[i] = like12_omega_i(omega12_z0[i], i = i, scale12_0 = holdscale12_0[z - 1],
                                dat0 = dat0, shape12_0 = holdshape12_0[z - 1], c12_0 = holdc12_0[z - 1])
 
- 	p[i] = exp(sap[i] - sap2[i] + sum(log(pnorm(omega12_star, 0, sd = frailtysd)))-
-                                  sum(log(pnorm(omega12_z0, 0, sd = frailtysd))))
+ 	p[i] = exp(sap[i] - sap2[i] + sum(log(dnorm(omega12_star, 0, sd = frailtysd)))-
+                                  sum(log(dnorm(omega12_z0, 0, sd = frailtysd))))
     
     if(is.na(p[i])) p[i] = 0; if((p[i] < 0)) p[i] = 0; if((p[i] > 1)) p[i] = 1
     z1[i] = rbinom(1, 1, prob = p[i])
@@ -206,14 +206,14 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   
   if(holdscale12) scale12_0_star = scale12_0
 
-  c12prior_p = pnorm(c12_0_star, 0, sd = 3)
-  beta12prior_p = pnorm(beta12_0_star, 0, sd = 3)
-  shape12prior_p = pnorm(shape12_0_star, 0, sd = 3)
+  c12prior_p = dnorm(c12_0_star, 0, sd = 3)
+  beta12prior_p = dnorm(beta12_0_star, 0, sd = 3)
+  shape12prior_p = dnorm(shape12_0_star, 0, sd = 3)
   shape12prior_p = ptruncnorm(shape12_0_star, a = 0, b = 3, mean = 0, sd = 3)
   
-  c12prior_c = pnorm(holdc12_0[z - 1], 0, sd = 3)
-  beta12prior_c = pnorm(holdbeta12_0[z - 1], 0, sd = 3)
-  shape12prior_c = pnorm(holdshape12_0[z - 1], 0, sd = 3)
+  c12prior_c = dnorm(holdc12_0[z - 1], 0, sd = 3)
+  beta12prior_c = dnorm(holdbeta12_0[z - 1], 0, sd = 3)
+  shape12prior_c = dnorm(holdshape12_0[z - 1], 0, sd = 3)
   shape12prior_c = ptruncnorm(holdshape12_0[z - 1], a = 0, b = 3, mean = 0, sd = 3)
 
     p = exp(like12_shape(shape12_0 = shape12_0_star, scale12_0 = scale12_0_star, omega12_z0 = omega12_z0,
@@ -252,8 +252,8 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
                                shape13_0 = holdshape13_0[z - 1], scale13_0 = holdscale13_0[z - 1], c23_0 = holdc23_0[z - 1],
                                shape23_0 = holdshape23_0[z - 1], scale23_0 = holdscale23_0[z - 1], theta23_0 = holdtheta23_0[z - 1])[1]
     
-  	p[i]  = exp(sap[i] - sap2[i] + sum(log(pnorm(omega13_star, 0, sd = frailtysd)))-
-                   sum(log(pnorm(omega13_z0, 0, sd = frailtysd)) ))
+  	p[i]  = exp(sap[i] - sap2[i] + sum(log(dnorm(omega13_star, 0, sd = frailtysd)))-
+                   sum(log(dnorm(omega13_z0, 0, sd = frailtysd)) ))
     
     if(is.na(p[i])) p[i] = 0; if((p[i] < 0)) p[i] = 0;  if((p[i] > 1)) p[i] = 1
     z1[i] = rbinom(1, 1, prob = p[i])
@@ -315,33 +315,33 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
 
   if(holdscale23) scale23_0_star = scale23_0
 
-  c13prior_p = pnorm(c13_0_star, 0, sd = 3)
-  beta13prior_p = pnorm(beta13_0_star, 0, sd = 3)
-  shape13prior_p = pnorm(shape13_0_star, 0, sd = 3)
+  c13prior_p = dnorm(c13_0_star, 0, sd = 3)
+  beta13prior_p = dnorm(beta13_0_star, 0, sd = 3)
+  shape13prior_p = dnorm(shape13_0_star, 0, sd = 3)
   shape13prior_p = ptruncnorm(shape13_0_star, a = 0, b = 3, mean = 0, sd = 3)
   
-  c13prior_c = pnorm(holdc13_0[z - 1], 0, sd = 3)
-  beta13prior_c = pnorm(holdbeta13_0[z - 1], 0, sd = 3)
-  shape13prior_c = pnorm(holdshape13_0[z - 1], 0, sd = 3)
+  c13prior_c = dnorm(holdc13_0[z - 1], 0, sd = 3)
+  beta13prior_c = dnorm(holdbeta13_0[z - 1], 0, sd = 3)
+  shape13prior_c = dnorm(holdshape13_0[z - 1], 0, sd = 3)
   shape13prior_c = ptruncnorm(holdshape13_0[z - 1], a = 0, b = 3, mean = 0, sd = 3)
   
-  c23prior_p = pnorm(c23_0_star, 0, sd = 3)
-  beta23prior_p = pnorm(beta23_0_star, 0, sd = 3)
-  theta23prior_p = pnorm(theta23_0_star, 0, sd = 3)
-  shape23prior_p = pnorm(shape23_0_star, 0, sd = 3)
+  c23prior_p = dnorm(c23_0_star, 0, sd = 3)
+  beta23prior_p = dnorm(beta23_0_star, 0, sd = 3)
+  theta23prior_p = dnorm(theta23_0_star, 0, sd = 3)
+  shape23prior_p = dnorm(shape23_0_star, 0, sd = 3)
   shape23prior_p = ptruncnorm(shape23_0_star, a = 0, b = 3, mean = 0, sd = 3)
   
-  c23prior_c = pnorm(holdc23_0[z - 1], 0, sd = 3)
-  beta23prior_c = pnorm(holdbeta23_0[z - 1], 0, sd = 3)
-  theta23prior_c = pnorm(holdtheta23_0[z - 1], 0, sd = 3)
-  shape23prior_c = pnorm(holdshape23_0[z - 1], 0, sd = 3)
+  c23prior_c = dnorm(holdc23_0[z - 1], 0, sd = 3)
+  beta23prior_c = dnorm(holdbeta23_0[z - 1], 0, sd = 3)
+  theta23prior_c = dnorm(holdtheta23_0[z - 1], 0, sd = 3)
+  shape23prior_c = dnorm(holdshape23_0[z - 1], 0, sd = 3)
   shape23prior_c = ptruncnorm(holdshape23_0[z - 1], a = 0, b = 3, mean = 0, sd = 3)
   
-  theta23prop_p = pnorm(theta23_0_star, -mod23_0$coefficients[2], sd = proposalsd)
-  theta23prop_c = pnorm(holdtheta23_0[z - 1], -mod23_0$coefficients[2], sd = proposalsd)
+  theta23prop_p = dnorm(theta23_0_star, -mod23_0$coefficients[2], sd = proposalsd)
+  theta23prop_c = dnorm(holdtheta23_0[z - 1], -mod23_0$coefficients[2], sd = proposalsd)
   
-  theta23prop_p = pnorm(theta23_0_star, 0, sd = proposalsd)
-  theta23prop_c = pnorm(holdtheta23_0[z - 1], 0, sd = proposalsd)
+  theta23prop_p = dnorm(theta23_0_star, 0, sd = proposalsd)
+  theta23prop_c = dnorm(holdtheta23_0[z - 1], 0, sd = proposalsd)
   
    p = exp(like13_shape(dat0 = dat0, c13_0 = c13_0_star, shape13_0 = shape13_0_star, scale13_0 = scale13_0_star, omega13_z0 = omega13_z0) +
                log(shape13prior_p)-(like13_shape(dat0 = dat0, c13_0 = holdc13_0[z - 1],
@@ -413,8 +413,8 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
   sap2[i] = like12_omega1_i(omega12_z1[i], i = i, scale12_1 = holdscale12_1[z - 1], dat1 = dat1, shape12_1 = holdshape12_1[z - 1],
                               c12_1 = holdc12_1[z - 1])[1]
   
-  p[i] = exp(sap[i] - sap2[i] + sum(log(pnorm(omega12_star, 0, sd = frailtysd)))-
-                 sum(log(pnorm(omega12_z1, 0, sd = frailtysd)) ))
+  p[i] = exp(sap[i] - sap2[i] + sum(log(dnorm(omega12_star, 0, sd = frailtysd)))-
+                 sum(log(dnorm(omega12_z1, 0, sd = frailtysd)) ))
   
   if(is.na(p[i])) p[i] = 0; if((p[i] < 0)) p[i] = 0; if((p[i] > 1)) p[i] = 1
   z1[i] = rbinom(1, 1, prob = p[i])
@@ -445,14 +445,14 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
     
   if(holdscale12) scale12_1_star = scale12_1
 
-  c12prior_p = pnorm(c12_1_star, 0, sd = 3)
-  beta12prior_p = pnorm(beta12_1_star, 0, sd = 3)
-  shape12prior_p = pnorm(shape12_1_star, 0, sd = 3)
+  c12prior_p = dnorm(c12_1_star, 0, sd = 3)
+  beta12prior_p = dnorm(beta12_1_star, 0, sd = 3)
+  shape12prior_p = dnorm(shape12_1_star, 0, sd = 3)
   shape12prior_p = ptruncnorm(shape12_1_star, a = 0, b = 3, mean = 0, sd = 3)
   
-  c12prior_c = pnorm(holdc12_1[z - 1], 0, sd = 3)
-  beta12prior_c = pnorm(holdbeta12_1[z - 1], 0, sd = 3)
-  shape12prior_c = pnorm(holdshape12_1[z - 1], 0, sd = 3)
+  c12prior_c = dnorm(holdc12_1[z - 1], 0, sd = 3)
+  beta12prior_c = dnorm(holdbeta12_1[z - 1], 0, sd = 3)
+  shape12prior_c = dnorm(holdshape12_1[z - 1], 0, sd = 3)
   shape12prior_c = ptruncnorm(holdshape12_1[z - 1], a = 0, b = 3, mean = 0, sd = 3)
   
     p = exp(like12_shape1(shape12_1 = shape12_1_star, scale12_1 = scale12_1_star,
@@ -490,8 +490,8 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
                                 c13_1 = holdc13_1[z - 1], shape23_1 = holdshape23_1[z - 1], scale23_1 = holdscale23_1[z - 1], theta23_1 = holdtheta23_1[z - 1],
                                 c23_1 = holdc23_1[z - 1])[1]
     
-    p[i]  = exp(sap[i] - sap2[i] + sum(log(pnorm(omega13_star, 0, sd = frailtysd)))-
-                   sum(log(pnorm(omega13_z1, 0, sd = frailtysd)) ))
+    p[i]  = exp(sap[i] - sap2[i] + sum(log(dnorm(omega13_star, 0, sd = frailtysd)))-
+                   sum(log(dnorm(omega13_z1, 0, sd = frailtysd)) ))
     
     if(is.na(p[i])) p[i] = 0; if((p[i] < 0)) p[i] = 0;  if((p[i] > 1)) p[i] = 1
     z1[i] = rbinom(1, 1, prob = p[i])
@@ -559,33 +559,33 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list){
 
   if(holdscale23) scale23_1_star =  scale23_1
 
-  c13prior_p = pnorm(c13_1_star, 0, sd = 3)
-  beta13prior_p = pnorm(beta13_1_star, 0, sd = 3)
-  shape13prior_p = pnorm(shape13_1_star, 0, sd = 3)
+  c13prior_p = dnorm(c13_1_star, 0, sd = 3)
+  beta13prior_p = dnorm(beta13_1_star, 0, sd = 3)
+  shape13prior_p = dnorm(shape13_1_star, 0, sd = 3)
   shape13prior_p = ptruncnorm(shape13_1_star, a = 0, b = 3, mean = 0, sd = 3)
   
-  c13prior_c = pnorm(holdc13_1[z - 1], 0, sd = 3)
-  beta13prior_c = pnorm(holdbeta13_1[z - 1], 0, sd = 3)
-  shape13prior_c = pnorm(holdshape13_1[z - 1], 0, sd = 3)
+  c13prior_c = dnorm(holdc13_1[z - 1], 0, sd = 3)
+  beta13prior_c = dnorm(holdbeta13_1[z - 1], 0, sd = 3)
+  shape13prior_c = dnorm(holdshape13_1[z - 1], 0, sd = 3)
   shape13prior_c = ptruncnorm(holdshape13_1[z - 1], a = 0, b = 3, mean = 0, sd = 3)
   
-  c23prior_p = pnorm(c23_1_star, 0, sd = 3)
-  beta23prior_p = pnorm(beta23_1_star, 0, sd = 3)
-  theta23prior_p = pnorm(theta23_1_star, 0, sd = 3)
-  shape23prior_p = pnorm(shape23_1_star, 0, sd = 3)
+  c23prior_p = dnorm(c23_1_star, 0, sd = 3)
+  beta23prior_p = dnorm(beta23_1_star, 0, sd = 3)
+  theta23prior_p = dnorm(theta23_1_star, 0, sd = 3)
+  shape23prior_p = dnorm(shape23_1_star, 0, sd = 3)
   shape23prior_p = ptruncnorm(shape23_1_star, a = 0, b = 3, mean = 0, sd = 3)
 
-  c23prior_c = pnorm(holdc23_1[z - 1], 0, sd = 3)
-  beta23prior_c = pnorm(holdbeta23_1[z - 1], 0, sd = 3)
-  shape23prior_c = pnorm(holdshape23_1[z - 1], 0, sd = 3)
+  c23prior_c = dnorm(holdc23_1[z - 1], 0, sd = 3)
+  beta23prior_c = dnorm(holdbeta23_1[z - 1], 0, sd = 3)
+  shape23prior_c = dnorm(holdshape23_1[z - 1], 0, sd = 3)
   shape23prior_c = ptruncnorm(holdshape23_1[z - 1], a = 0, b = 3, mean = 0, sd = 3)
-  theta23prior_c = pnorm(holdtheta23_1[z - 1], 0, sd = 3)
+  theta23prior_c = dnorm(holdtheta23_1[z - 1], 0, sd = 3)
   
-  theta23prop_p = pnorm(theta23_1_star, -mod23_1$coefficients[2], sd = proposalsd)
-  theta23prop_c = pnorm(holdtheta23_1[z - 1], -mod23_1$coefficients[2], sd = proposalsd)
+  theta23prop_p = dnorm(theta23_1_star, -mod23_1$coefficients[2], sd = proposalsd)
+  theta23prop_c = dnorm(holdtheta23_1[z - 1], -mod23_1$coefficients[2], sd = proposalsd)
   
-  theta23prop_p = pnorm(theta23_1_star, 0, sd = proposalsd)
-  theta23prop_c = pnorm(holdtheta23_1[z - 1], 0, sd = proposalsd)
+  theta23prop_p = dnorm(theta23_1_star, 0, sd = proposalsd)
+  theta23prop_c = dnorm(holdtheta23_1[z - 1], 0, sd = proposalsd)
 
    p = exp(like13_shape1(shape13_1 = shape13_1_star, scale13_1 = holdscale13_1[z - 1], dat1 = dat1,
               omega13_z1 = omega13_z1, c13_1 = c13_1_star) + log(shape13prior_p)-
