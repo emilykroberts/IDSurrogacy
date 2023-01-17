@@ -70,7 +70,8 @@ params_list = true_params
 
 # run simulation
 set.seed(1  + array_id)
-params_res = run_sim(SIM = SIM, rhos = rhos, rhot = rhot, frailtysd = frailtysd, params_list = true_params)
+params_res = run_sim(SIM = SIM, rhos = rhos, rhot = rhot, frailtysd = frailtysd, params_list = true_params, tau_s = tau_s, tau_t = tau_t,
+                     dat0 = dat0, dat1 = dat1)
 
 # view results
 plot_traceplots(params_matrix = params_res, variable = "int")
