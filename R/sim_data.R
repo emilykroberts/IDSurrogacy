@@ -11,6 +11,7 @@
 #' @param rhost correlation term
 #' @param frailtysd standard deviation of generated frailties
 #' @param diffscale1323 logical value if baseline hazards for 1-3 and 2-3 should be equal
+#' @param specify logical value if data should not be Weibull (misspecified)
 #'
 #' @return datasets dat0, dat1 and true frailties for use in other functions
 #'
@@ -22,7 +23,8 @@
 #' rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
 #' diffscale1323 = TRUE))
      
-sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, rhost, diffscale1323){
+sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, rhost, diffscale1323,
+specify){
 	
 	independent = FALSE
 	equalfrail = T
@@ -128,6 +130,20 @@ sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, r
   ST[,2] =   (1/scale23_0*(-log(1-U2))/exp((c23_0*omega23true0 + theta23_0 * ST[,1])))^shape23_0
   ST[,5] =   (1/scale23_1*(-log(1-U5))/exp((c23_1*omega23true1 + theta23_1 *  ST[,4])))^shape23_1
   
+  if(specify = F){ # gompertz
+  ST = status = ST_raw = cbind(
+    1/shape12_0*log(1-shape12_0/scale12_0*(-log(1-U1))/exp((c12_0*omega12true0 + beta12_0 * x))),
+    1/shape23_0*log(1-shape23_0/scale23_0*(-log(1-U2))/exp((c23_0*omega23true0 + beta23_0 * x))),
+    1/shape13_0*log(1-shape13_0/scale13_0*(-log(1-U3))/exp((c13_0*omega13true0 + beta13_0 * x))),
+    1/shape12_1*log(1-shape12_1/scale12_1*(-log(1-U4))/exp((c12_1*omega12true1 + beta12_1 * x))),
+    1/shape23_1*log(1-shape23_1/scale23_1*(-log(1-U5))/exp((c23_1*omega23true1 + beta23_1 * x))),
+    1/shape13_1*log(1-shape13_1/scale13_1*(-log(1-U6))/exp((c13_1*omega13true1 + beta13_1 * x))),
+  ); status[,1:6] = 1
+  
+  
+  ST[,2] =   1/shape23_0*log(1-shape23_0/scale23_0*(-log(1-U2))/exp((c23_0*omega23true0 + theta23_0 * ST[,1])))
+  ST[,5] =   1/shape23_1*log(1-shape23_1/scale23_1*(-log(1-U5))/exp((c23_1*omega23true1 + theta23_1 *  ST[,4])))  
+  }
 
   
   if(T){
