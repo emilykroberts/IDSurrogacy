@@ -9,6 +9,7 @@ if(is.na(array_id)) array_id = 1
 n = 600 # set various parameters to run simulations
 rhost = rhos = rhot = .5
 SIM = 3000
+specify = T
 
 effecttheta = F
 holdfrail12 = F 
@@ -49,7 +50,8 @@ set.seed(1 + array_id)
 
 # simulate data
 dat = sim_data(n = n, array_id = array_id, scenario = scenario, effecttheta = effecttheta,
-      rhos = rhos, rhot = rhot, rhost = rhost, frailtysd = frailtysd, diffscale1323 = diffscale1323)
+      rhos = rhos, rhot = rhot, rhost = rhost, frailtysd = frailtysd, 
+      diffscale1323 = diffscale1323, specify = specify)
 
 dat0 = dat$dat0
 dat1 = dat$dat1
@@ -71,7 +73,7 @@ params_list = true_params
 # run simulation
 set.seed(1  + array_id)
 params_res = run_sim(SIM = SIM, rhos = rhos, rhot = rhot, frailtysd = frailtysd, params_list = true_params, tau_s = tau_s, tau_t = tau_t,
-                     dat0 = dat0, dat1 = dat1)
+                     dat0 = dat0, dat1 = dat1, array_id = array_id)
 
 # view results
 plot_traceplots(params_matrix = params_res, variable = "int")
