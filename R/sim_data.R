@@ -5,13 +5,18 @@
 #' @param n sample size
 #' @param array_id ID of simulation (used for running in parallel)
 #' @param scenario data setting for which treatment effects exist between transitions
-#' @param effecttheta logical if theta23 should be zero
+#' @param effecttheta value of theta23
 #' @param rhos correlation term
 #' @param rhot correlation term
 #' @param rhost correlation term
 #' @param frailtysd standard deviation of generated frailties
 #' @param diffscale1323 logical value if baseline hazards for 1 - 3 and 2 - 3 should be equal
 #' @param specify logical value if data should not be Weibull (misspecified)
+#' @param equalfrail logical value assumptions about the distribution of the 
+# six counterfactual frailties (if all are independent)
+#' @param independent logical value assumptions about the distribution of the 
+# six counterfactual frailties (if omega_13^z = omega_23^z)
+
 #'
 #' @return datasets dat0, dat1 and true frailties for use in other functions
 #'
@@ -24,11 +29,7 @@
 #' diffscale1323 = TRUE))
  
 sim_data = function(n, array_id, scenario, effecttheta, frailtysd, rhot, rhos, rhost, diffscale1323, 
-specify){
-	
- independent = FALSE # change if you want to change the assumptions about the distribution of the 
- # six counterfactual frailties along with the parameter equalfrail
- equalfrail = TRUE
+specify, independent, equalfrail){
  
  {
  if(scenario == 1){ effect12 = F; effect13 = F ; effect23 = F}
@@ -44,8 +45,7 @@ specify){
  beta12_1 = 0; beta13_1 = 0; beta23_1 = 0; beta12_0 = 0; beta13_0 = 0; beta23_0 = 0
  theta23_1 = 0; theta23_0 = 0
  
- if(effecttheta){theta23_1 = - 0.1; theta23_0 = - 0.1
- }
+ theta23_1 = theta23_0 = effecttheta
  
  c13_0 = c13_1 = 1
  c12_1 = c12_0 = 1
@@ -76,7 +76,7 @@ specify){
  R = matrix(rep(1, 6 * 6), 6, 6); 
  
  if(independent){ R[1, 2] = R[2, 1] = rhos
- R[3, 1] = R[1, 3] = 0
+ R[1, 3] = R[3, 1] = 0
  R[1, 4] = R[4, 1] = 0
  R[1, 5] = R[5, 1] = 0
  R[1, 6] = R[6, 1] = 0

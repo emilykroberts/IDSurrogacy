@@ -1,20 +1,15 @@
-library(truncnorm); library(latex2exp); library(cowplot); library(xtable); library(here)
+library(truncnorm); library(latex2exp); library(cowplot); library(xtable); library(here); library(ggpubr)
 library(ggplot2); library(survival); library(survminer); library(frailtyEM); library(frailtypack); library(mvtnorm)
 
 setwd("./R")
 
-array_id = 1; array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID')) # allows for running on cluster
-if(is.na(array_id)) array_id = 1
-n = 600 # set various parameters to run simulations or data example (simulation is run first in this file)
+array_id = 10; array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID')) # allows for running on cluster
+if(is.na(array_id)) array_id = 10
+n = 600 # set various parameters to run simulations (see details in corresponding functions)
 rhost = rhos = rhot = 0.5
 SIM = 3000
-specify = T # correctly specify distribution of baseline hazard
-
-effecttheta = F
-holdfrail12 = F 
-holdfrail13 = F
-holdtheta = F
-
+specify = T
+effecttheta = 0
 equalfrail = T
 independent = T
 diffscale1323 = T
@@ -23,7 +18,6 @@ proposalsd = 0.1
 proposalsdfrail = 0.003
 frailtysd = 0.4
 
-cep = T
 tau_s = 1
 tau_t = 2
 
@@ -31,7 +25,7 @@ ss = rep(1:8, 100)
 scenario = ss[array_id]
 
 write = T
-plotwrite = F
+plotwrite = T
 
 # keep source files in a folder called R directory
 for(i in 1:(length(list.files(pattern = "\\.R$")))){
@@ -39,12 +33,13 @@ for(i in 1:(length(list.files(pattern = "\\.R$")))){
   )
 }
 
+### step one: run main simulation study many times
 set.seed(1 + array_id)
 
 # simulate data
-dat = sim_data(n = n, array_id = array_id, scenario = scenario, effecttheta = effecttheta, 
+dat = sim_data(n = n, array_id = array_id, scenario = scenario, effecttheta = 0, 
                rhos = rhos, rhot = rhot, rhost = rhost, frailtysd = frailtysd, 
-               diffscale1323 = diffscale1323, specify = specify)
+               diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
 
 dat0 = dat$dat0
 dat1 = dat$dat1
@@ -59,27 +54,23 @@ true_params = dat$params
 
 setwd("./results") # save results about true CEP curve and simulations in results folder
 
-# true_cep(dat0 = dat0, dat1 = dat1, write = write, params_list = true_params, plotwrite = plotwrite)
-
 params_list = true_params
 
 # run simulation
 set.seed(1 + array_id)
 params_res = run_sim(SIM = SIM, array_id = array_id, rhos = rhos, rhot = rhot, frailtysd = frailtysd, 
-                     params_list = true_params, tau_s = tau_s, tau_t = tau_t, dat0 = dat0, dat1 = dat1)
-
-# view results
-plot_traceplots(params_matrix = params_res, variable = "int")
-plot_traceplots(params_matrix = params_res, variable = "slope")
+                     params_list = true_params, tau_s = tau_s, tau_t = tau_t, dat0 = dat0, dat1 = dat1,
+                     proposalsdfrail = proposalsdfrail, proposalsd = proposalsd, MFS = F,
+                     independent = independent, equalfrail = equalfrail, holdshape = F, holdtheta = F
+)
 
 final_results(params_matrix = params_res, write = write)
+# saves results based on scenario and simulation ID (array_id) for later aggregation across many replications
+# creates corresponding named Figure3.jpeg (Figure 3) in results for manuscript
+plot_results(params_matrix = params_res, write = plotwrite, fignum = 3)
 
-# saves results based on scenario and simulation ID - named Figure3.jpeg (Figure 3) in results for manuscript
-plot_results(params_matrix = params_res, write = plotwrite) # creates CEP file such as Figure3.jpeg, Figurea5a.jpeg
-# for example, this individual file corresponds to results within Table 2 of aggregated simulation results
-
-### after simulations are run, can read in results or analyze pseudo data example
-# post-processing to aggregate results and recreate tables in manuscript such as table2results.csv, tablea2results.csv, tablea3results.csv, tablea4results.csv
+# after simulations are run, post-processing to aggregate results and recreate tables in manuscript
+# for example, this individual file corresponds to results that can eventually contribute to Table 2 of aggregated simulation results
 if(F){
   
   b = NULL
@@ -115,179 +106,172 @@ if(F){
     
   }
   
-  # can be saved to produce tables such as: table2results.csv, tablea2results.csv, tablea3results.csv, tablea4results.csv
+  # can be saved to produce tables such as table2results.csv
   write.csv(b, file = "table2results.csv")
 }
 
+######## sensitivity analyses and supplemental files that do not require many simulations run in parallel (running set to FALSE)
 if(F){
+  setwd("./supplement") # save results about true CEP curve and simulations in results/supplement folder
+  set.seed(10)
   
-  # read in results from many simulations (scenario 1 in this case)
-  params = do.call(rbind, sapply(list.files(pattern = "params, 1", full.names = TRUE), read.table, head = TRUE, simplify = F))
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 1a
+  dat = sim_data(n = n, array_id = array_id, scenario = 1, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  # produces nice Latex code for manuscript tables
-  xtable( rbind(rbind(round(colMeans(params[c(
-    "int", "slope", "shape12_0", "shape13_0", "shape23_0", 
-    "shape12_1", "shape13_1", "shape23_1", 
-    "scale12_0", "scale13_0", "scale23_0", 
-    "scale12_1", "scale13_1", "scale23_1", 
-    "theta23_0", "theta23_1"
-  )], na.rm = T), 3)), 
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  rbind(round(colMeans(params[c(
-    "intse", "slopese", "shape12_0SE", "shape13_0SE", "shape23_0SE", 
-    "shape12_1SE", "shape13_1SE", "shape23_1SE", 
-    "scale12_0SE", "scale13_0SE", "scale23_0SE", 
-    "scale12_1SE", "scale13_1SE", "scale23_1SE", 
-    "theta23_0SE", "theta23_1SE"
-  )], na.rm = T), 3)), 
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S1a',
+           tau_s = tau_s, tau_t = tau_t)
   
-  rbind(round(apply(params[c(
-    "int", "slope", "shape12_0", "shape13_0", "shape23_0", 
-    "shape12_1", "shape13_1", "shape23_1", 
-    "scale12_0", "scale13_0", "scale23_0", 
-    "scale12_1", "scale13_1", "scale23_1", 
-    "theta23_0", "theta23_1"
-  )], 2, FUN = sd, na.rm = T), 3))))
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 1b
+  dat = sim_data(n = n, array_id = array_id, scenario = 2, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  # corresponds to Table 2
-  tab2 = (rbind(rbind(round(colMeans(params[c(
-    "int", "slope", "shape12_0", "shape13_0", "shape23_0", 
-    "shape12_1", "shape13_1", "shape23_1", 
-    "scale12_0", "scale13_0", "scale23_0", 
-    "scale12_1", "scale13_1", "scale23_1", 
-    "theta23_0", "theta23_1"
-  )], na.rm = T), 3)), 
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  rbind(round(colMeans(params[c(
-    "intse", "slopese", "shape12_0SE", "shape13_0SE", "shape23_0SE", 
-    "shape12_1SE", "shape13_1SE", "shape23_1SE", 
-    "scale12_0SE", "scale13_0SE", "scale23_0SE", 
-    "scale12_1SE", "scale13_1SE", "scale23_1SE", 
-    "theta23_0SE", "theta23_1SE"
-  )], na.rm = T), 3)), 
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S1b',
+           tau_s = tau_s, tau_t = tau_t)
   
-  rbind(round(apply(params[c(
-    "int", "slope", "shape12_0", "shape13_0", "shape23_0", 
-    "shape12_1", "shape13_1", "shape23_1", 
-    "scale12_0", "scale13_0", "scale23_0", 
-    "scale12_1", "scale13_1", "scale23_1", 
-    "theta23_0", "theta23_1"
-  )], 2, FUN = sd, na.rm = T), 3)))
-  )
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 1c
+  dat = sim_data(n = n, array_id = array_id, scenario = 3, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  # can be saved to produce tables such as: table2results.csv, tablea2results.csv, tablea3results.csv, tablea4results.csv
-  write.csv(tb2, file = "table2results.csv")
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  # sensitivity analyses
-  # corresponds to Supplement Table 2 tablea2results.csv - Figurea5b.jpeg by setting equalfrail = F
-  # corresponds to Supplement Table 3 tablea3results.csv - misspecify distribution as sensitivity analyses
-  # corresponds to Supplement Table 4 tablea4results.csv - change scale parameter 13 using diffscale1323 Boolean
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S1c',
+           tau_s = tau_s, tau_t = tau_t)
   
-  #### the following code corresponds to the data example
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 1d
+  dat = sim_data(n = n, array_id = array_id, scenario = 4, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  setwd('..')
-  setwd('./data')
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  # create plots for real data
-  rtog = read.csv("simulated_data.csv")
-  ST = (cbind(rtog$metastatic_prostate_cancer_years, rtog$survival_years - rtog$metastatic_prostate_cancer_years, 
-              rtog$survival_years))
-  status = cbind(as.numeric(rtog$metastatic_prostate_cancer == 1), 
-                 as.numeric(rtog$metastatic_prostate_cancer == 1 & rtog$survival == 1), 
-                 as.numeric(rtog$survival == 1 & rtog$metastatic_prostate_cancer == 2))
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S1d',
+           tau_s = tau_s, tau_t = tau_t)
   
-  ST = data.frame(cbind(ST, status, rtog$trt))
-  names(ST) = c("y12", "y23", "y13", "s12", "s23", "s13", "trt")
-  ST$y23[ST$y23 == 0] = NA
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 2a
+  dat = sim_data(n = n, array_id = array_id, scenario = 5, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  dat0 = ST[ST$trt == 0, ] # put data in form for run_sim function for analysis
-  dat1 = ST[ST$trt == 1, ]
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  # cumulative incidence of S
-  ci = mstate::Cuminc(time = rtog$metastatic_prostate_cancer_years, status = rtog$metastatic_prostate_cancer, 
-                      data = rtog, group = rtog$trt, failcodes = c(1, 2))
-  ci1 = ci[ci$group == 0, ]; ci2 = ci[ci$group == 1, ]
-  plot(c(0, ci1$time, max(ci1$time + 0.1)), c(0, ci1$CI.2, max(ci1$CI.2)), type = 's', ylim = c(0, 1), lty = 'dashed', 
-       ylab = "Probability", xlab = "Time from Randomization", 
-       main = "Estimates based on the cumulative incidence functions\nBlack dashed line indicates z = 1, solid red line indicates z = 0", 
-       lwd = 2); lines(c(0, ci2$time, max(ci2$time) + 0.1), c(0, ci2$CI.2, max(ci2$CI.2)), type = 's', col = 'red')
-  # can be saved as in Figurea6.jpeg
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S2a',
+           tau_s = tau_s, tau_t = tau_t)
   
-  # KM plots
-  rtog$metastatic_prostate_cancer_cause = as.numeric(rtog$metastatic_prostate_cancer == 1)
-  rtog$metastatic_prostate_cancer_years_comp = as.numeric(rtog$metastatic_prostate_cancer_years != 0)
-  rtogs = rtog[rtog$metastatic_prostate_cancer == 1, ]
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 2b
+  dat = sim_data(n = n, array_id = array_id, scenario = 6, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  a = ggsurvplot(survfit(Surv(rtog$metastatic_prostate_cancer_years, rtog$metastatic_prostate_cancer_cause) ~ rtog$trt), 
-                 data = rtog, risk.table = F, ggtheme = theme_classic2(base_size = 20), legend.title = "Treatment", 
-                 legend.labs = c("With antiandrogen\ntherapy", "Without antiandrogen\ntherapy ")) + 
-    ggtitle("KM Curve of Intermediate Outcome S\n(Individuals are Censored at T)") + ylab("Freedom from S") + xlab("Time")
-  b = ggsurvplot(survfit(Surv(rtog$survival_years, rtog$survival) ~ rtog$trt), data = rtog, risk.table = F, 
-                 ggtheme = theme_classic2(base_size = 20), legend.title = "Treatment", 
-                 legend.labs = c("With antiandrogen\ntherapy", "Without antiandrogen\ntherapy ")) + 
-    ggtitle("KM Curve of True Outcome T") + ylab("Freedom from T") + xlab("Time")
-  c = ggsurvplot(survfit(Surv((rtogs$survival_years - rtogs$metastatic_prostate_cancer_years), rtogs$survival) ~ rtogs$trt), 
-                 data = rtogs, risk.table = F, ggtheme = theme_classic2(base_size = 20), legend.title = "Treatment", 
-                 legend.labs = c("With antiandrogen\ntherapy", "Without antiandrogen\ntherapy ")) + 
-    ggtitle("KM Curve of Time between S to T\nFor Those who Experienced S") + ylab("Freedom from T Survival (Post S)") + xlab("Time")
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  # can create KM plots within the manuscript here
-  #ggsave(file = "Figure5a.jpeg", a$plot, width = 8, height = 8) # save KM curves in manuscript (Figure 5)
-  #ggsave(file = "Figure5b.jpeg", b$plot, width = 8, height = 8)
-  #ggsave(file = "Figure5c.jpeg", c$plot, width = 8, height = 8)
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S2b',
+           tau_s = tau_s, tau_t = tau_t)
   
-  params_res = run_sim(SIM = SIM, array_id = array_id, rhos = rhos, rhot = rhot, frailtysd = frailtysd, 
-                       params_list = true_params, tau_s = tau_s, tau_t = tau_t, 
-                       dat0 = dat0, dat1 = dat1)
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 2c
+  dat = sim_data(n = n, array_id = array_id, scenario = 7, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  # view results and diagnostics
-  plot_traceplots(params_matrix = params_res, variable = "int")
-  plot_traceplots(params_matrix = params_res, variable = "slope")
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  final_results(params_matrix = params_res, write = write)
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S2c',
+           tau_s = tau_s, tau_t = tau_t)
   
-  params = params_res$params
-  # produces nice Latex code for manuscript
-  xtable( rbind(rbind(round(colMeans(params[c(
-    "int", "slope", "shape12_0", "shape13_0", "shape23_0", 
-    "shape12_1", "shape13_1", "shape23_1", 
-    "scale12_0", "scale13_0", "scale23_0", 
-    "scale12_1", "scale13_1", "scale23_1", 
-    "theta23_0", "theta23_1"
-  )], na.rm = T), 3)), 
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 2d
+  dat = sim_data(n = n, array_id = array_id, scenario = 8, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  rbind(round(apply(params[c(
-    "int", "slope", "shape12_0", "shape13_0", "shape23_0", 
-    "shape12_1", "shape13_1", "shape23_1", 
-    "scale12_0", "scale13_0", "scale23_0", 
-    "scale12_1", "scale13_1", "scale23_1", 
-    "theta23_0", "theta23_1"
-  )], 2, FUN = sd, na.rm = T), 3))))
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  # corresponds to Table 3 - data results
-  tab3 = (rbind(rbind(round(colMeans(params[c(
-    "int", "slope", "shape12_0", "shape13_0", "shape23_0", 
-    "shape12_1", "shape13_1", "shape23_1", 
-    "scale12_0", "scale13_0", "scale23_0", 
-    "scale12_1", "scale13_1", "scale23_1", 
-    "theta23_0", "theta23_1"
-  )], na.rm = T), 3)), 
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S2d',
+           tau_s = tau_s, tau_t = tau_t)
   
-  rbind(round(apply(params[c(
-    "int", "slope", "shape12_0", "shape13_0", "shape23_0", 
-    "shape12_1", "shape13_1", "shape23_1", 
-    "scale12_0", "scale13_0", "scale23_0", 
-    "scale12_1", "scale13_1", "scale23_1", 
-    "theta23_0", "theta23_1"
-  )], 2, FUN = sd, na.rm = T), 3))))
+  set.seed(10)
   
-  # write.csv(tb3, file = "table3results.csv")
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 3a
+  dat = sim_data(n = n, array_id = array_id, scenario = 2, effecttheta = 0, 
+                 rhos = 0.95, rhot = 0.95, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
   
-  # saves results - named Figure6.jpeg (Figure 6) in results for manuscript
-  # plot_results(params_matrix = params_res, write = plotwrite)
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
   
-  # set MFS to true to use MFS as the surrogate endpoint
-  # file saved as Figurea7.jpeg in the supplement
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S3a',
+           tau_s = tau_s, tau_t = tau_t)
+  
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 3b
+  dat = sim_data(n = n, array_id = array_id, scenario = 2, effecttheta = 0, 
+                 rhos = 0.0, rhot = 0.0, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
+  
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
+  
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S3b',
+           tau_s = tau_s, tau_t = tau_t)
+  
+  set.seed(10)
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 4a
+  dat = sim_data(n = n, array_id = array_id, scenario = 2, effecttheta = -1, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
+  
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
+  
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S4a',
+           tau_s = tau_s, tau_t = tau_t)
+  
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 4b
+  dat = sim_data(n = n, array_id = array_id, scenario = 2, effecttheta = 0, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
+  
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
+  
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S4b',
+           tau_s = tau_s, tau_t = tau_t)
+  
+  # simulate data, generate true CEP curve with generative values for Supplemental Figure 4c
+  dat = sim_data(n = n, array_id = array_id, scenario = 2, effecttheta = 1, 
+                 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
+                 diffscale1323 = diffscale1323, specify = specify, equalfrail = equalfrail, independent = independent)
+  
+  dat0 = dat$dat0; dat1 = dat$dat1; params_list = dat$params
+  omega12true0 = dat$o12save0; omega12true1 = dat$o12save1; omega13true0 = dat$o13save0
+  omega13true1 = dat$o13save1; omega23true0 = dat$o23save0; omega23true1 = dat$o23save1
+  
+  true_cep(dat0 = dat0, dat1 = dat1, write = F, params_list = params_list, plotwrite = T, fignum = 'S4c',
+           tau_s = tau_s, tau_t = tau_t)
   
 }
-
