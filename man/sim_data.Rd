@@ -13,7 +13,10 @@ sim_data(
   rhot,
   rhos,
   rhost,
-  diffscale1323
+  diffscale1323,
+  specify,
+  independent,
+  equalfrail
 )
 }
 \arguments{
@@ -23,7 +26,7 @@ sim_data(
 
 \item{scenario}{data setting for which treatment effects exist between transitions}
 
-\item{effecttheta}{logical if theta23 should be zero}
+\item{effecttheta}{value of theta23}
 
 \item{frailtysd}{standard deviation of generated frailties}
 
@@ -33,7 +36,13 @@ sim_data(
 
 \item{rhost}{correlation term}
 
-\item{diffscale1323}{logical value if baseline hazards for 1-3 and 2-3 should be equal}
+\item{diffscale1323}{logical value if baseline hazards for 1 - 3 and 2 - 3 should be equal}
+
+\item{specify}{logical value if data should not be Weibull (misspecified)}
+
+\item{independent}{logical value assumptions about the distribution of the}
+
+\item{equalfrail}{logical value assumptions about the distribution of the}
 }
 \value{
 datasets dat0, dat1 and true frailties for use in other functions
@@ -45,7 +54,7 @@ simulate data
 equalfrail = TRUE
 independent = TRUE
 frailtysd = 0.5
-example(sim_data(n = 600, array_id = 1, scenario = 2, effecttheta = FALSE,
+example(sim_data(n = 600, array_id = 1, scenario = 2, effecttheta = FALSE, 
 rhos = 0.5, rhot = 0.5, rhost = 0.5, frailtysd = frailtysd, 
 diffscale1323 = TRUE))
 }

@@ -4,7 +4,25 @@
 \alias{run_sim}
 \title{run the simulation}
 \usage{
-run_sim(SIM, rhos, rhot, frailtysd, params_list)
+run_sim(
+  SIM,
+  rhos,
+  rhot,
+  frailtysd,
+  params_list,
+  dat1,
+  dat0,
+  array_id,
+  tau_s,
+  tau_t,
+  proposalsdfrail,
+  proposalsd,
+  MFS,
+  independent,
+  equalfrail,
+  holdshape,
+  holdtheta
+)
 }
 \arguments{
 \item{SIM}{number of iterations of mcmc to run}
@@ -16,6 +34,28 @@ run_sim(SIM, rhos, rhot, frailtysd, params_list)
 \item{frailtysd}{standard deviation of frailty term}
 
 \item{params_list}{list of true generating parameters}
+
+\item{dat1}{data for treatment arm: y12, s12, y13, s13, y23, s23}
+
+\item{dat0}{data for treatment arm: y12, s12, y13, s13, y23, s23}
+
+\item{tau_s}{time for evaluating S}
+
+\item{tau_t}{time for evaluating T}
+
+\item{proposalsdfrail}{standard deviation of frailty term proposal distribution}
+
+\item{proposalsd}{standard deviation of (non-)frailty parameter proposal distribution}
+
+\item{MFS}{Boolean to determine if composite endpoint (MFS) will be used as the surrogate}
+
+\item{independent}{logical value assumptions about the distribution of the}
+
+\item{equalfrail}{logical value assumptions about the distribution of the}
+
+\item{holdshape}{logical value about whether or not the shape parameter is estimated}
+
+\item{holdtheta}{logical value about whether or not the theta parameter is estimated}
 }
 \value{
 simulation results

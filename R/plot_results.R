@@ -4,7 +4,7 @@
 #'
 #' @param params_matrix matrix of parameters from mcmc
 #' @param write logical value if results should be written to a file
-#' @param write logical value if results should be written to a file
+#' @param fignum figure number
 
 #' 
 #' @return cep curve

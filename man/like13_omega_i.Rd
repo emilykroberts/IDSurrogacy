@@ -6,6 +6,7 @@
 \usage{
 like13_omega_i(
   omega13_z0,
+  omega23_z0,
   i,
   scale13_0,
   dat0,
@@ -19,6 +20,8 @@ like13_omega_i(
 }
 \arguments{
 \item{omega13_z0}{frailty term}
+
+\item{omega23_z0}{frailty term}
 
 \item{i}{index for individual in dataset}
 

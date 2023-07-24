@@ -4,7 +4,7 @@
 \alias{plot_results}
 \title{plot results from mcmc}
 \usage{
-plot_results(params_matrix, write)
+plot_results(params_matrix, write, fignum)
 }
 \arguments{
 \item{params_matrix}{matrix of parameters from mcmc}

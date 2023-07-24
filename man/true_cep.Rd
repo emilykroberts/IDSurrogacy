@@ -4,7 +4,9 @@
 \alias{true_cep}
 \title{create true cep curve}
 \usage{
-true_cep(dat0, dat1, write, params_list, plotwrite)
+true_cep(dat0, dat1, write, params_list, plotwrite, fignum, tau_s, tau_t)
+
+true_cep(dat0, dat1, write, params_list, plotwrite, fignum, tau_s, tau_t)
 }
 \arguments{
 \item{dat0}{data for placebo arm}
@@ -16,14 +18,26 @@ true_cep(dat0, dat1, write, params_list, plotwrite)
 \item{params_list}{true values of parameters}
 
 \item{plotwrite}{logical value if plot should be saved to a file}
+
+\item{fignum}{figure number for saving}
+
+\item{tau_s}{time of evaluation for S}
+
+\item{tau_t}{time of evaluation for T}
 }
 \value{
+true values of CEP curve
+
 true values of CEP curve
 }
 \description{
 create cep true based on true values
+
+create cep true based on true values
 }
 \examples{
+example(true_cep(dat0 = dat0, dat1 = dat1, write = T, params_list = 
+params_list, plotwrite = T))
 example(true_cep(dat0 = dat0, dat1 = dat1, write = T, params_list = 
 params_list, plotwrite = T))
 }

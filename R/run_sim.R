@@ -20,7 +20,7 @@
 # six counterfactual frailties (if omega_13^z = omega_23^z)
 #' @param holdshape logical value about whether or not the shape parameter is estimated 
 #' @param holdtheta logical value about whether or not the theta parameter is estimated 
-
+#' @param array_id indicator of simulation/run number of MCMC analysis
 #'
 #' @return simulation results
 #'
