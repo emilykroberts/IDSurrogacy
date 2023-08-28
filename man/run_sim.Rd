@@ -39,6 +39,8 @@ run_sim(
 
 \item{dat0}{data for treatment arm: y12, s12, y13, s13, y23, s23}
 
+\item{array_id}{indicator of simulation/run number of MCMC analysis}
+
 \item{tau_s}{time for evaluating S}
 
 \item{tau_t}{time for evaluating T}

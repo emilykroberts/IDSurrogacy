@@ -10,6 +10,8 @@ plot_results(params_matrix, write, fignum)
 \item{params_matrix}{matrix of parameters from mcmc}
 
 \item{write}{logical value if results should be written to a file}
+
+\item{fignum}{figure number}
 }
 \value{
 cep curve
