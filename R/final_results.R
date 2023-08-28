@@ -105,6 +105,8 @@ final_results = function(params_matrix, write){
   params$slope = mean(params_matrix$params$slope, na.rm = T)
   params$slopese = sd(params_matrix$params$slope, na.rm = T)
   
+  params = round(params, 3)
+  
   print(params[c(T, F)])
   
   if(write){ fname = paste('params', ",", scenario, ",", array_id, '.txt', sep="")

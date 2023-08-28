@@ -20,7 +20,7 @@
 # six counterfactual frailties (if omega_13^z = omega_23^z)
 #' @param holdshape logical value about whether or not the shape parameter is estimated 
 #' @param holdtheta logical value about whether or not the theta parameter is estimated 
-#' @param array_id indicator of simulation/run number of MCMC analysis
+
 #'
 #' @return simulation results
 #'
@@ -152,8 +152,11 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list, dat1, dat0, array_id
   
   o12save1 = o12save0 = o13save1 = o13save0 = o23save1 = o23save0 = 
     rep(0, nrow(dat0) + nrow(dat1))
-  
-  {
+    
+  omega23_z0 = rep(0, nrow(dat0))
+    omega23_z1 = rep(0, nrow(dat1))
+
+  if(F){ # can start with uninformative frailties or using frailtyPenal for initial estimates by setting to TRUE
     dat1penal = data.frame(time = c(dat1$y12), status = c(dat1$s12), 
                            id = rep(1 : (nrow(dat1)), 1), death = c(dat1$s13))
     dat1penal = dat1penal[complete.cases(dat1penal), ]
@@ -619,7 +622,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list, dat1, dat0, array_id
     z1 = p = rep(NA, (n1))
     sap = sap2 = rep(NA, (n1))
     
-    for(i in 1: (n1)){
+    for(i in 1 : (n1)){
       sap[i] = like13_omega_i(omega13_z0 = omega13_star[i], i = i, omega23_z0 = omega13_star[i], scale13_0 = holdscale13_1[z - 1], dat0 = dat1, shape13_0 = holdshape13_1[z - 1], 
                               c13_0 = holdc13_1[z - 1], shape23_0 = holdshape23_1[z - 1], scale23_0 = holdscale23_1[z - 1], theta23_0 = holdtheta23_1[z - 1], 
                               c23_0 = holdc23_1[z - 1])[1]
@@ -651,7 +654,7 @@ run_sim = function(SIM, rhos, rhot, frailtysd, params_list, dat1, dat0, array_id
     sap = sap2 = rep(NA, (n1))
     
     if(!equalfrail){
-      for(i in 1: (n1)){
+      for(i in 1 : (n1)){
         sap[i] = like13_omega_i(omega13_z0 = omega13_star[i], omega23_z0 = omega23_star[i], i = i, scale13_0 = holdscale13_1[z - 1], dat0 = dat1, shape13_0 = holdshape13_1[z - 1], 
                                 c13_0 = holdc13_1[z - 1], shape23_0 = holdshape23_1[z - 1], scale23_0 = holdscale23_1[z - 1], theta23_0 = holdtheta23_1[z - 1], 
                                 c23_0 = holdc23_1[z - 1])[1]

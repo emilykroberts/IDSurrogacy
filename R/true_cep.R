@@ -328,18 +328,18 @@ true_cep = function(dat0, dat1, write, params_list, plotwrite, fignum, tau_s, ta
   print(res)
   if(write) write.table(res, file = fname, sep = "\t", row.names = F, col.names = T)
   
-  d2 = ggplot(dat, aes(log(X), Y, alpha = 0.01)) + geom_point(alpha = 0.5) + theme_classic() + 
+  d2 = ggplot(dat, aes((X), Y, alpha = 0.01)) + geom_point(alpha = 0.5) + theme_classic() + 
     ggtitle("Illness - Death CEP Curve with True Values" ) + 
     theme(legend.position = "none") + 
     xlab("Delta S_i") + ylim( - 1, 1) + 
     ylab(TeX("$\\Delta T_i = P(T_i(1) > \\tau_T|\\omega_{.i}^1) - P(T_i(0) > \\tau_T |\\omega_{.i}^0)$$ ")) + 
     xlab(TeX("$\\Delta S_i = log \\frac{\\Lambda_{12}^{0} (\\tau_S|\\omega_{12i}^0)}{\\Lambda_{12}^{1} (\\tau_S|\\omega_{12i}^1)}$$ ")) + 
     geom_hline(yintercept = 0, linetype = "dashed") + geom_vline(xintercept = 0, linetype = "dashed") + 
-    geom_hline(yintercept = mean(dat$Y, na.rm = T), linetype = "dashed", col = 'red') + geom_vline(xintercept = mean(log(dat$X), na.rm = T), linetype = "dashed", col = 'red') + 
+    geom_hline(yintercept = mean(dat$Y, na.rm = T), linetype = "dashed", col = 'red') + geom_vline(xintercept = mean((dat$X), na.rm = T), linetype = "dashed", col = 'red') + 
     theme(text = element_text(size = 16)) + geom_smooth(method = 'lm', level = 0.95) + coord_cartesian(xlim = c( - 5, 5)); 
   
   d2 = d2 + theme(axis.title.x = element_text(margin = margin(t = 5, r = 0, b = 50, l = 0, unit = "mm")))
-  line_1 = expr(paste("Intercept ", !!c(round(summary(reg)$coef[1, 1], 3)), " Slope ", !!c(round(summary(reg)$coef[2, 1], 3)), " R\U00B2 = ", !!round(summary(reg_true)$r.squared, 3), 
+  line_1 = expr(paste("Intercept ", !!c(round(summary(reg)$coef[1, 1], 3)), " Slope ", !!c(round(summary(reg)$coef[2, 1], 3)), " R\U00B2 = ", !!round(summary(reg)$r.squared, 3), 
                       sep = ""))
   
   line_2 = expr(paste("Generating Parameters ", alpha[12] ^ 0, " = ", !!shape12_0, ", ", 
