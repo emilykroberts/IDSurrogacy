@@ -69,7 +69,7 @@ rtogs = rtog[rtog$metastatic_prostate_cancer == 1, ]
 a = ggsurvplot(survfit(Surv(rtog$metastatic_prostate_cancer_years, rtog$metastatic_prostate_cancer_cause) ~ rtog$trt), 
                data = rtog, risk.table = F, ggtheme = theme_classic2(base_size = 20), legend.title = "Treatment", 
                legend.labs = c("z = 1", "z = 0")) + 
-  ggtitle("KM Curve of Intermediate Outcome S\n(Individuals are Censored at T)") + ylab("Freedom from S") + xlab("Timee (years)")
+  ggtitle("KM Curve of Intermediate Outcome S\n(Individuals are Censored at T)") + ylab("Freedom from S") + xlab("Time (years)")
 b = ggsurvplot(survfit(Surv(rtog$survival_years, rtog$survival) ~ rtog$trt), data = rtog, risk.table = F, 
                ggtheme = theme_classic2(base_size = 20), legend.title = "Treatment", 
                legend.labs = c("z = 1", "z = 0")) + 
@@ -77,7 +77,7 @@ b = ggsurvplot(survfit(Surv(rtog$survival_years, rtog$survival) ~ rtog$trt), dat
 c = ggsurvplot(survfit(Surv((rtogs$survival_years - rtogs$metastatic_prostate_cancer_years), rtogs$survival) ~ rtogs$trt), 
                data = rtogs, risk.table = F, ggtheme = theme_classic2(base_size = 20), legend.title = "Treatment", 
                legend.labs = c("z = 1", "z = 0")) + 
-  ggtitle("KM Curve of Time between S to T\nFor Those who Experienced S") + ylab("Freedom from T Survival (Post S)") + xlab("Timee (years)")
+  ggtitle("KM Curve of Time between S to T\nFor Those who Experienced S") + ylab("Freedom from T Survival (Post S)") + xlab("Time (years)")
 
 multi.page = ggarrange(a$plot, b$plot, c$plot,ncol = 2, labels = c("", ""), nrow = 2) 
 ggexport(multi.page, filename = "Figure5.jpeg", width = 1100, height = 1100)
